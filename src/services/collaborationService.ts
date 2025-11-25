@@ -338,13 +338,21 @@ export function subscribeToUserNotifications(
     limit(50)
   )
 
-  return onSnapshot(q, (snapshot) => {
-    const notifications = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Notification[]
-    callback(notifications)
-  })
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const notifications = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Notification[]
+      callback(notifications)
+    },
+    (error) => {
+      console.error('通知訂閱錯誤:', error)
+      // 即使發生錯誤，也回傳空陣列讓 loading 狀態結束
+      callback([])
+    }
+  )
 }
 
 /**
