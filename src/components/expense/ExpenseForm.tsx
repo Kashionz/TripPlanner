@@ -20,7 +20,6 @@ import {
 import { useExpenseSplit, type SplitMethod } from '@/hooks/useExpense'
 
 interface ExpenseFormProps {
-  tripId: string
   members: TripMember[]
   expense?: Expense | null
   isOpen: boolean
@@ -36,7 +35,6 @@ interface ExpenseFormProps {
 }
 
 export default function ExpenseForm({
-  tripId,
   members,
   expense,
   isOpen,
@@ -65,7 +63,6 @@ export default function ExpenseForm({
     amountDifference,
     updateRatio,
     updateCustomAmount,
-    resetToEqual,
     toggleMember,
     isValid,
   } = useExpenseSplit(numericAmount, members)

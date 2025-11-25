@@ -33,7 +33,7 @@ import type { TripMember } from '@/types/trip'
 export function useTripExpenses(tripId: string | undefined) {
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [error] = useState<string | null>(null)
 
   // 訂閱費用變更
   useEffect(() => {
@@ -183,12 +183,6 @@ export function useExpenseSummary(
  * 分攤方式選擇
  */
 export type SplitMethod = 'equal' | 'ratio' | 'custom'
-
-interface SplitConfig {
-  method: SplitMethod
-  ratios?: { userId: string; ratio: number }[]
-  amounts?: { userId: string; amount: number }[]
-}
 
 /**
  * 費用分攤 Hook

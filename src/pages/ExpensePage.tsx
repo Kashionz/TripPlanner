@@ -373,7 +373,6 @@ export default function ExpensePage() {
 
       {/* 費用表單 Modal */}
       <ExpenseForm
-        tripId={id!}
         members={trip.members || []}
         expense={editingExpense}
         isOpen={showForm}
