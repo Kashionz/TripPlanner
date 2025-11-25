@@ -1,17 +1,237 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  --color-primary: #5D7C89;
-  --color-secondary: #E8DCCA;
-  --color-accent: #D98E73;
-  --color-background: #F9F9F9;
-  --color-surface: #FFFFFF;
-  --color-text: #333333;
-  --font-sans: "Noto Sans JP", sans-serif;
+@layer base {
+  :root {
+    /* 日系簡約風格色彩變數 */
+    --background: 60 20% 98%;
+    --foreground: 0 0% 18%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 18%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 18%;
+
+    --primary: 179 15% 42%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 100 12% 56%;
+    --secondary-foreground: 0 0% 100%;
+
+    --accent: 43 45% 56%;
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 60 20% 96%;
+    --muted-foreground: 0 0% 36%;
+
+    --destructive: 0 30% 58%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 50 10% 90%;
+    --input: 50 10% 90%;
+    --ring: 179 15% 42%;
+
+    --radius: 12px;
+  }
+
+  .dark {
+    --background: 0 0% 10%;
+    --foreground: 0 0% 96%;
+
+    --card: 0 0% 14%;
+    --card-foreground: 0 0% 96%;
+
+    --popover: 0 0% 14%;
+    --popover-foreground: 0 0% 96%;
+
+    --primary: 179 15% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 100 12% 60%;
+    --secondary-foreground: 0 0% 100%;
+
+    --accent: 43 45% 62%;
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 67%;
+
+    --destructive: 0 30% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 23%;
+    --input: 0 0% 23%;
+    --ring: 179 15% 48%;
+  }
 }
 
 @layer base {
+  * {
+    @apply border-border;
+  }
+
   body {
-    @apply bg-background text-text font-sans antialiased;
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 日系簡約字體設定 */
+  html {
+    font-family: "Noto Sans TC", "Noto Sans JP", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  /* 標題字體較輕盈 */
+  h1, h2, h3 {
+    @apply font-light tracking-tight;
+  }
+
+  /* 連結過渡效果 */
+  a {
+    @apply transition-colors duration-300;
+  }
+
+  /* 輸入框預設樣式 */
+  input, textarea, select {
+    @apply transition-all duration-200;
+  }
+
+  /* 焦點樣式 */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  /* 日系風格卡片 */
+  .card-japanese {
+    @apply bg-white rounded-2xl border border-border p-6
+           transition-all duration-300
+           hover:shadow-md hover:border-border-dark;
+  }
+
+  /* 日系風格按鈕 */
+  .btn-japanese {
+    @apply px-6 py-3 rounded-xl font-medium tracking-wide
+           transition-all duration-300 ease-out;
+  }
+
+  .btn-japanese-primary {
+    @apply btn-japanese bg-primary text-white
+           hover:bg-primary-dark hover:shadow-sm
+           hover:-translate-y-0.5;
+  }
+
+  .btn-japanese-secondary {
+    @apply btn-japanese bg-transparent border border-border text-foreground-secondary
+           hover:bg-background-secondary;
+  }
+
+  .btn-japanese-ghost {
+    @apply btn-japanese bg-transparent text-primary
+           hover:bg-primary/10;
+  }
+
+  /* 日系風格輸入框 */
+  .input-japanese {
+    @apply w-full px-4 py-3 bg-background border border-border rounded-xl
+           text-foreground placeholder:text-foreground-muted
+           focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20
+           transition-all duration-200;
+  }
+
+  /* 日系風格標籤 */
+  .badge-japanese {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm
+           bg-background-secondary text-foreground-secondary;
+  }
+
+  /* 頁面容器 */
+  .page-container {
+    @apply min-h-screen bg-background;
+  }
+
+  /* 內容區塊 */
+  .content-section {
+    @apply py-12 md:py-16 lg:py-24;
+  }
+
+  /* 留白間距 */
+  .spacing-japanese {
+    @apply space-y-6 md:space-y-8;
+  }
+}
+
+@layer utilities {
+  /* 日系動畫效果 */
+  .animate-japanese-fade-in {
+    animation: japanese-fade-in 0.4s ease-out;
+  }
+
+  .animate-japanese-slide-up {
+    animation: japanese-slide-up 0.4s ease-out;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.3s ease-out;
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.3s ease-out;
+  }
+
+  @keyframes japanese-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes japanese-slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  /* 柔和陰影 */
+  .shadow-japanese {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  }
+
+  .shadow-japanese-lg {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  }
+
+  /* 毛玻璃效果 */
+  .glass-japanese {
+    @apply bg-white/80 backdrop-blur-md;
   }
 }

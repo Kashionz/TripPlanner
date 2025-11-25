@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#5B7B7A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B9D83;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- 背景圓形 -->
+  <circle cx="50" cy="50" r="45" fill="url(#grad)" />
+  <!-- 地圖標記圖示 -->
+  <path d="M50 20 C35 20 25 32 25 45 C25 60 50 80 50 80 C50 80 75 60 75 45 C75 32 65 20 50 20 Z" 
+        fill="#FAFAF8" 
+        stroke="none"/>
+  <!-- 中心圓點 -->
+  <circle cx="50" cy="42" r="10" fill="#5B7B7A" />
+</svg>

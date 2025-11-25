@@ -1,3 +1,35 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build
+dist
+dist-ssr
+build
+*.local
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.DS_Store
+Thumbs.db
+
 # Logs
 logs
 *.log
@@ -7,20 +39,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Testing
+coverage
+*.lcov
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# TypeScript
+*.tsbuildinfo
 
-.env
+# Misc
+.eslintcache
+.stylelintcache
+
+# Development Documents
+docs/*

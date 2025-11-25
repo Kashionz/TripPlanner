@@ -1,16 +1,143 @@
-# React + Vite
+# 🗺 TripPlanner - 旅遊行程規劃協作平台
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+一款日系簡約風格的旅遊行程規劃 Web App，讓你與朋友一起規劃、即時協作、輕鬆出發。
 
-Currently, two official plugins are available:
+![TripPlanner Banner](https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&h=400&fit=crop)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ 功能特色
 
-## React Compiler
+- 📍 **行程規劃** - 拖拉排序景點、整合 Google Maps、自動計算交通時間
+- 👥 **多人協作** - 邀請好友加入、即時同步編輯、留言討論
+- 💰 **費用分攤** - 記錄旅途開支、自動計算分攤、清晰明瞭
+- 📄 **行程匯出** - 匯出 PDF 行程表、離線查看、輕鬆分享
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠 技術棧
 
-## Expanding the ESLint configuration
+### 前端
+- **React 18** + **Vite** - 現代化開發體驗
+- **TypeScript** - 型別安全
+- **Tailwind CSS** + **shadcn/ui** - 日系簡約 UI
+- **Zustand** - 輕量級狀態管理
+- **React Router v6** - 客戶端路由
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 後端
+- **Firebase Authentication** - Google 登入
+- **Cloud Firestore** - 即時資料庫
+- **Firebase Storage** - 圖片儲存
+- **Firebase Hosting** - 網站部署
+
+### 第三方 API
+- **Google Maps JavaScript API** - 地圖顯示
+- **Google Places API** - 景點搜尋
+- **Google Directions API** - 路線規劃
+
+## 🚀 快速開始
+
+### 前置需求
+- Node.js 18+
+- npm 或 pnpm
+- Firebase 專案
+- Google Cloud Platform 專案 (Maps API)
+
+### 安裝步驟
+
+1. **Clone 專案**
+```bash
+git clone https://github.com/yourusername/travel-planner.git
+cd travel-planner
+```
+
+2. **安裝依賴**
+```bash
+npm install
+```
+
+3. **設定環境變數**
+```bash
+cp .env.example .env
+```
+編輯 `.env` 檔案，填入你的 Firebase 和 Google Maps API 設定。
+
+4. **啟動開發伺服器**
+```bash
+npm run dev
+```
+
+5. **開啟瀏覽器**
+訪問 http://localhost:3000
+
+## 📁 專案結構
+
+```
+travel-planner/
+├── public/              # 靜態資源
+├── src/
+│   ├── components/      # 可重用元件
+│   │   ├── ui/          # shadcn/ui 元件
+│   │   ├── layout/      # 版面配置
+│   │   ├── auth/        # 認證相關
+│   │   ├── trip/        # 行程相關
+│   │   └── ...
+│   ├── pages/           # 頁面元件
+│   ├── hooks/           # 自訂 Hooks
+│   ├── stores/          # Zustand Stores
+│   ├── services/        # API 服務
+│   ├── types/           # TypeScript 型別
+│   ├── utils/           # 工具函式
+│   └── lib/             # 第三方整合
+├── docs/                # 文件
+└── ...
+```
+
+## 🎨 設計風格
+
+本專案採用**日系簡約風格 (Japanese Minimalism)**：
+
+- **Ma (間)** - 善用留白
+- **Kanso (簡素)** - 簡潔純粹
+- **Seijaku (靜寂)** - 平靜柔和
+
+### 主要色彩
+| 色彩 | 色碼 | 用途 |
+|------|------|------|
+| 青磁色 | `#5B7B7A` | 主要色 |
+| 若竹色 | `#8B9D83` | 次要色 |
+| 金茶色 | `#C4A35A` | 強調色 |
+| 生成色 | `#FAFAF8` | 背景色 |
+| 墨色 | `#2D2D2D` | 文字色 |
+
+## 📜 可用指令
+
+```bash
+# 開發
+npm run dev          # 啟動開發伺服器
+
+# 建置
+npm run build        # 建置生產版本
+npm run preview      # 預覽生產版本
+
+# 程式碼品質
+npm run lint         # ESLint 檢查
+```
+
+## 📖 文件
+
+- [架構設計文件](./docs/ARCHITECTURE.md)
+- [UI 設計指南](./docs/UI-DESIGN-GUIDE.md)
+
+## 🗓 開發進度
+
+- [x] Phase 1: 基礎架構
+- [ ] Phase 2: 行程管理
+- [ ] Phase 3: 景點功能
+- [ ] Phase 4: 協作功能
+- [ ] Phase 5: 費用管理
+- [ ] Phase 6: 匯出與優化
+
+## 📄 授權
+
+MIT License
+
+---
+
+Made with ❤️ by TripPlanner Team
