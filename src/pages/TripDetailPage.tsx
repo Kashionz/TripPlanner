@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -13,10 +13,13 @@ import {
   MessageSquare,
   UserPlus,
   DollarSign,
+  Download,
+  Share2,
 } from 'lucide-react'
 import { useTrip, useTripActions, useDateFormatter, useTripStats } from '@/hooks/useTrip'
 import { useTripPlaces, usePlaceActions, useSelectedPlace } from '@/hooks/usePlace'
 import { useTripComments } from '@/hooks/useCollaboration'
+import { useTripExpenses, useExpenseSummary } from '@/hooks/useExpense'
 import { useAuthStore } from '@/stores/authStore'
 import DayCard from '@/components/itinerary/DayCard'
 import DraggableList from '@/components/itinerary/DraggableList'
@@ -26,6 +29,7 @@ import TripMap from '@/components/map/TripMap'
 import InviteModal from '@/components/collaboration/InviteModal'
 import MemberList from '@/components/collaboration/MemberList'
 import Comments from '@/components/collaboration/Comments'
+import { ExportModal } from '@/components/export'
 import type { Day, MemberRole } from '@/types/trip'
 import type { Place, PlaceCategory } from '@/types/place'
 
@@ -48,6 +52,13 @@ export default function TripDetailPage() {
   // 留言
   const { comments } = useTripComments(id)
 
+  // 費用 (用於匯出)
+  const { expenses } = useTripExpenses(id)
+  const { summary: expenseSummary } = useExpenseSummary(expenses, trip?.members || [])
+
+  // 列印參考
+  const contentRef = useRef<HTMLDivElement>(null)
+
   // UI 狀態
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -55,6 +66,7 @@ export default function TripDetailPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('split')
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [showComments, setShowComments] = useState(false)
+  const [showExportModal, setShowExportModal] = useState(false)
   
   // Modal 狀態
   const [showPlaceSearch, setShowPlaceSearch] = useState(false)
@@ -262,6 +274,15 @@ export default function TripDetailPage() {
             </Link>
           )}
 
+          {/* 匯出按鈕 */}
+          <button
+            onClick={() => setShowExportModal(true)}
+            className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+            title="匯出行程"
+          >
+            <Download className="w-5 h-5 text-foreground-secondary" />
+          </button>
+
           <div className="relative">
             <button
               onClick={() => setShowMenu(!showMenu)}
@@ -277,6 +298,16 @@ export default function TripDetailPage() {
                   onClick={() => setShowMenu(false)}
                 />
                 <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-border py-2 z-20">
+                  <button
+                    onClick={() => {
+                      setShowMenu(false)
+                      setShowExportModal(true)
+                    }}
+                    className="w-full px-4 py-2 text-left text-foreground-secondary hover:bg-background-secondary flex items-center gap-2"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    匯出 / 分享
+                  </button>
                   {isOwner && (
                     <button
                       onClick={() => {
@@ -304,9 +335,12 @@ export default function TripDetailPage() {
       )}
 
       {/* Content */}
-      <div className={`grid gap-6 ${
-        viewMode === 'split' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'
-      }`}>
+      <div
+        ref={contentRef}
+        className={`grid gap-6 ${
+          viewMode === 'split' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'
+        }`}
+      >
         {/* Days & Places */}
         {viewMode !== 'map' && (
           <div className="space-y-4">
@@ -484,6 +518,17 @@ export default function TripDetailPage() {
         tripTitle={trip.title}
         isOpen={showInviteModal}
         onClose={() => setShowInviteModal(false)}
+      />
+
+      {/* Export Modal */}
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        trip={trip}
+        places={allPlaces}
+        expenses={expenses}
+        expenseSummary={expenseSummary}
+        printRef={contentRef}
       />
 
       {/* Comments Sidebar */}

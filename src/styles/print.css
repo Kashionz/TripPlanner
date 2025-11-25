@@ -1,0 +1,256 @@
+/* 列印樣式表 */
+
+@media print {
+  /* 基本設定 */
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  html, body {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000 !important;
+    background: #fff !important;
+  }
+
+  /* 隱藏不需要列印的元素 */
+  .no-print,
+  header,
+  nav,
+  footer,
+  button:not(.print-show),
+  [role="navigation"],
+  [role="banner"],
+  .sidebar,
+  .modal,
+  .dropdown,
+  .tooltip,
+  .toast,
+  .floating-button {
+    display: none !important;
+  }
+
+  /* 頁面設定 */
+  @page {
+    size: A4;
+    margin: 15mm 10mm;
+  }
+
+  @page :first {
+    margin-top: 10mm;
+  }
+
+  /* 避免在不當位置分頁 */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  p, li, dt, dd, tr, blockquote {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  img, figure, table {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    max-width: 100% !important;
+  }
+
+  /* 確保連結可見 */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+
+  a[href^="#"]::after,
+  a[href^="javascript"]::after {
+    content: none;
+  }
+
+  /* 行程卡片樣式 */
+  .trip-card,
+  .day-card,
+  .place-item {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 10pt;
+    padding: 10pt;
+    background: #fff !important;
+  }
+
+  .day-card {
+    page-break-before: auto;
+    page-break-after: auto;
+  }
+
+  /* 地圖不列印 */
+  .map-container,
+  [class*="google-map"],
+  .leaflet-container {
+    display: none !important;
+  }
+
+  /* 標題樣式 */
+  .trip-title {
+    font-size: 18pt;
+    font-weight: bold;
+    margin-bottom: 10pt;
+    padding-bottom: 5pt;
+    border-bottom: 2pt solid #5B7B7A;
+  }
+
+  .day-title {
+    font-size: 14pt;
+    font-weight: 600;
+    color: #5B7B7A;
+    margin-bottom: 8pt;
+  }
+
+  .place-name {
+    font-size: 12pt;
+    font-weight: 500;
+  }
+
+  .place-time {
+    font-size: 10pt;
+    color: #666;
+  }
+
+  .place-address {
+    font-size: 9pt;
+    color: #888;
+  }
+
+  .place-note {
+    font-size: 10pt;
+    color: #444;
+    font-style: italic;
+    margin-top: 5pt;
+    padding-left: 10pt;
+    border-left: 2pt solid #C4A35A;
+  }
+
+  /* 費用表格 */
+  .expense-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10pt;
+  }
+
+  .expense-table th,
+  .expense-table td {
+    border: 1px solid #ddd;
+    padding: 6pt 8pt;
+    text-align: left;
+    font-size: 10pt;
+  }
+
+  .expense-table th {
+    background: #f5f5f5 !important;
+    font-weight: 600;
+  }
+
+  .expense-table tr:nth-child(even) {
+    background: #fafafa !important;
+  }
+
+  /* 頁尾資訊 */
+  .print-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 8pt;
+    color: #999;
+    padding: 5mm;
+  }
+
+  /* 分頁符號 */
+  .page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  /* 強制顯示背景顏色 */
+  .print-bg {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* 類別標籤 */
+  .category-badge {
+    display: inline-block;
+    padding: 2pt 6pt;
+    border-radius: 3pt;
+    font-size: 9pt;
+    background: #f0f0f0 !important;
+    color: #333 !important;
+  }
+
+  /* 統計區塊 */
+  .stats-block {
+    display: flex;
+    justify-content: space-around;
+    padding: 10pt;
+    margin: 10pt 0;
+    border: 1px solid #ddd;
+    background: #fafafa !important;
+  }
+
+  .stats-item {
+    text-align: center;
+  }
+
+  .stats-value {
+    font-size: 16pt;
+    font-weight: bold;
+    color: #5B7B7A;
+  }
+
+  .stats-label {
+    font-size: 9pt;
+    color: #666;
+  }
+}
+
+/* 列印預覽專用類別 */
+.print-only {
+  display: none;
+}
+
+@media print {
+  .print-only {
+    display: block;
+  }
+}
+
+/* 列印時顯示的水印 */
+.print-watermark {
+  display: none;
+}
+
+@media print {
+  .print-watermark {
+    display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 72pt;
+    color: rgba(0, 0, 0, 0.03);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: -1;
+  }
+}

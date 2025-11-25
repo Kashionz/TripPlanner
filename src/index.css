@@ -1,3 +1,6 @@
+/* 引入列印樣式 - 必須放在最前面 */
+@import './styles/print.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

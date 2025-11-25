@@ -1,21 +1,42 @@
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { Loader2 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { useUIStore } from '@/stores/uiStore'
 
-// Layout
+// Layout (不懶載入，因為是核心元件)
 import Layout from '@/components/layout/Layout'
 import AuthLayout from '@/components/layout/AuthLayout'
 
-// Pages
-import HomePage from '@/pages/HomePage'
-import LoginPage from '@/pages/LoginPage'
-import DashboardPage from '@/pages/DashboardPage'
-import TripDetailPage from '@/pages/TripDetailPage'
-import TripEditPage from '@/pages/TripEditPage'
-import ExpensePage from '@/pages/ExpensePage'
-import InvitePage from '@/pages/InvitePage'
-import NotFoundPage from '@/pages/NotFoundPage'
+// 懶載入頁面
+const HomePage = lazy(() => import('@/pages/HomePage'))
+const LoginPage = lazy(() => import('@/pages/LoginPage'))
+const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
+const TripDetailPage = lazy(() => import('@/pages/TripDetailPage'))
+const TripEditPage = lazy(() => import('@/pages/TripEditPage'))
+const ExpensePage = lazy(() => import('@/pages/ExpensePage'))
+const InvitePage = lazy(() => import('@/pages/InvitePage'))
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
+
+// PWA Components
+import { InstallPrompt, UpdatePrompt, OfflineBanner } from '@/components/pwa'
+
+// 載入中元件
+function PageLoader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
+        <p className="text-foreground-muted text-sm">載入中...</p>
+      </div>
+    </div>
+  )
+}
+
+// Suspense 包裝器
+function SuspenseWrapper({ children }: { children: React.ReactNode }) {
+  return <Suspense fallback={<PageLoader />}>{children}</Suspense>
+}
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -71,84 +92,124 @@ function App() {
   }, [theme])
 
   return (
-    <Routes>
-      {/* 公開路由 */}
-      <Route path="/" element={<HomePage />} />
+    <>
+      {/* PWA 元件 */}
+      <OfflineBanner />
+      <InstallPrompt />
+      <UpdatePrompt />
       
-      {/* 登入路由 */}
-      <Route
-        path="/login"
-        element={
-          <PublicRoute>
-            <AuthLayout>
-              <LoginPage />
-            </AuthLayout>
-          </PublicRoute>
-        }
-      />
+      <Routes>
+        {/* 公開路由 */}
+        <Route
+          path="/"
+          element={
+            <SuspenseWrapper>
+              <HomePage />
+            </SuspenseWrapper>
+          }
+        />
 
-      {/* 需要認證的路由 */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <DashboardPage />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
+        {/* 登入路由 */}
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <AuthLayout>
+                <SuspenseWrapper>
+                  <LoginPage />
+                </SuspenseWrapper>
+              </AuthLayout>
+            </PublicRoute>
+          }
+        />
 
-      <Route
-        path="/trip/new"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <TripEditPage />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
+        {/* 需要認證的路由 */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <SuspenseWrapper>
+                  <DashboardPage />
+                </SuspenseWrapper>
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/trip/:id"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <TripDetailPage />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/trip/new"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <SuspenseWrapper>
+                  <TripEditPage />
+                </SuspenseWrapper>
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/trip/:id/edit"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <TripEditPage />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/trip/:id"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <SuspenseWrapper>
+                  <TripDetailPage />
+                </SuspenseWrapper>
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/trip/:id/expense"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <ExpensePage />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/trip/:id/edit"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <SuspenseWrapper>
+                  <TripEditPage />
+                </SuspenseWrapper>
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
 
-    {/* 邀請頁面 - 半公開路由（需要登入才能接受，但可以查看邀請內容） */}
-    <Route path="/invite/:token" element={<InvitePage />} />
+        <Route
+          path="/trip/:id/expense"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <SuspenseWrapper>
+                  <ExpensePage />
+                </SuspenseWrapper>
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
 
-    {/* 404 */}
-    <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+        {/* 邀請頁面 - 半公開路由 */}
+        <Route
+          path="/invite/:token"
+          element={
+            <SuspenseWrapper>
+              <InvitePage />
+            </SuspenseWrapper>
+          }
+        />
+
+        {/* 404 */}
+        <Route
+          path="*"
+          element={
+            <SuspenseWrapper>
+              <NotFoundPage />
+            </SuspenseWrapper>
+          }
+        />
+      </Routes>
+    </>
   )
 }
 

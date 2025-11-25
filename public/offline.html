@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>離線中 - Travel Planner</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Noto Sans TC", "Noto Sans JP", -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #FAFAF8;
+      color: #2D2D2D;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 400px;
+    }
+
+    .icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 32px;
+      background: linear-gradient(135deg, #5B7B7A 0%, #8B9D83 100%);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 30px rgba(91, 123, 122, 0.2);
+    }
+
+    .icon svg {
+      width: 60px;
+      height: 60px;
+      color: white;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 300;
+      margin-bottom: 16px;
+      color: #5B7B7A;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #5C5C5C;
+      margin-bottom: 32px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background-color: #5B7B7A;
+      color: white;
+      font-size: 16px;
+      font-weight: 500;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: #4A6A69;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(91, 123, 122, 0.3);
+    }
+
+    .button:active {
+      transform: translateY(0);
+    }
+
+    .button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .tips {
+      margin-top: 48px;
+      padding: 20px;
+      background-color: #F5F5F0;
+      border-radius: 16px;
+      text-align: left;
+    }
+
+    .tips h2 {
+      font-size: 14px;
+      font-weight: 500;
+      color: #5B7B7A;
+      margin-bottom: 12px;
+    }
+
+    .tips ul {
+      list-style: none;
+      font-size: 14px;
+      color: #5C5C5C;
+    }
+
+    .tips li {
+      padding: 8px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .tips li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #C4A35A;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1A1A1A;
+        color: #F5F5F5;
+      }
+
+      h1 {
+        color: #8B9D83;
+      }
+
+      p, .tips ul {
+        color: #A0A0A0;
+      }
+
+      .tips {
+        background-color: #252525;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+        <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+      </svg>
+    </div>
+
+    <h1>目前離線中</h1>
+    <p>看起來您沒有網路連線。請檢查您的網路設定，然後重試。</p>
+
+    <button class="button" onclick="window.location.reload()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <polyline points="1 20 1 14 7 14"></polyline>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+      </svg>
+      重新整理
+    </button>
+
+    <div class="tips">
+      <h2>小提示</h2>
+      <ul>
+        <li>您之前瀏覽過的行程可能仍可在離線時查看</li>
+        <li>連上網路後，您的變更將自動同步</li>
+        <li>若問題持續，請嘗試重新啟動應用程式</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
