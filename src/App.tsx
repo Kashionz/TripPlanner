@@ -13,6 +13,7 @@ import LoginPage from '@/pages/LoginPage'
 import DashboardPage from '@/pages/DashboardPage'
 import TripDetailPage from '@/pages/TripDetailPage'
 import TripEditPage from '@/pages/TripEditPage'
+import ExpensePage from '@/pages/ExpensePage'
 import InvitePage from '@/pages/InvitePage'
 import NotFoundPage from '@/pages/NotFoundPage'
 
@@ -126,6 +127,17 @@ function App() {
           <ProtectedRoute>
             <Layout>
               <TripEditPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/trip/:id/expense"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <ExpensePage />
             </Layout>
           </ProtectedRoute>
         }

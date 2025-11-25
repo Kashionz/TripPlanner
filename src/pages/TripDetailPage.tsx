@@ -12,6 +12,7 @@ import {
   List,
   MessageSquare,
   UserPlus,
+  DollarSign,
 } from 'lucide-react'
 import { useTrip, useTripActions, useDateFormatter, useTripStats } from '@/hooks/useTrip'
 import { useTripPlaces, usePlaceActions, useSelectedPlace } from '@/hooks/usePlace'
@@ -242,6 +243,15 @@ export default function TripDetailPage() {
             </button>
           )}
           
+          {/* 費用按鈕 */}
+          <Link
+            to={`/trip/${id}/expense`}
+            className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+            title="費用管理"
+          >
+            <DollarSign className="w-5 h-5 text-foreground-secondary" />
+          </Link>
+
           {canEdit && (
             <Link
               to={`/trip/${id}/edit`}
