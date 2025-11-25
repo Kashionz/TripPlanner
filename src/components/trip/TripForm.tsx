@@ -1,8 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Calendar, Image, Loader2 } from 'lucide-react'
+import { Calendar, Loader2, Upload, X } from 'lucide-react'
 import type { Trip } from '@/types/trip'
 import { useTripActions, useDateFormatter } from '@/hooks/useTrip'
+import {
+  uploadTripCoverImage,
+  compressImage,
+  validateImageFile,
+  type UploadProgress,
+} from '@/services/uploadService'
 
 interface TripFormProps {
   trip?: Trip | null
@@ -33,6 +39,9 @@ export default function TripForm({ trip, onSuccess }: TripFormProps) {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // 初始化表單資料
   useEffect(() => {
@@ -60,6 +69,63 @@ export default function TripForm({ trip, onSuccess }: TripFormProps) {
       [name]: value,
     }))
     setError(null)
+  }
+
+  // 處理圖片選擇
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // 驗證檔案
+    const validation = validateImageFile(file)
+    if (!validation.valid) {
+      setError(validation.error || '圖片驗證失敗')
+      return
+    }
+
+    setError(null)
+    setIsUploading(true)
+    setUploadProgress({ progress: 0, status: 'uploading' })
+
+    try {
+      // 壓縮圖片
+      const compressedFile = await compressImage(file, 1920, 0.85)
+
+      // 上傳圖片
+      const downloadURL = await uploadTripCoverImage(
+        compressedFile,
+        undefined,
+        (progress) => setUploadProgress(progress)
+      )
+
+      setFormData((prev) => ({
+        ...prev,
+        coverImage: downloadURL,
+      }))
+    } catch (err: any) {
+      console.error('上傳圖片失敗:', err)
+      setError(err.message || '上傳圖片失敗，請稍後再試')
+    } finally {
+      setIsUploading(false)
+      setUploadProgress(null)
+      // 清除 input 以允許重複選擇同一檔案
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
+  // 移除封面圖片
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({
+      ...prev,
+      coverImage: null,
+    }))
+  }
+
+  // 觸發檔案選擇
+  const handleClickUpload = () => {
+    fileInputRef.current?.click()
   }
 
   const validateForm = (): boolean => {
@@ -225,23 +291,83 @@ export default function TripForm({ trip, onSuccess }: TripFormProps) {
         <h3 className="font-medium text-foreground mb-4">
           封面圖片
         </h3>
-        <div className="aspect-video bg-background-secondary rounded-xl flex items-center justify-center border-2 border-dashed border-border hover:border-primary cursor-pointer transition-colors">
+        
+        {/* 隱藏的檔案輸入 */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/gif,image/webp"
+          onChange={handleImageSelect}
+          className="hidden"
+        />
+
+        <div
+          onClick={!isUploading && !formData.coverImage ? handleClickUpload : undefined}
+          className={`aspect-video bg-background-secondary rounded-xl flex items-center justify-center border-2 border-dashed transition-colors relative overflow-hidden ${
+            formData.coverImage
+              ? 'border-transparent'
+              : isUploading
+                ? 'border-primary cursor-wait'
+                : 'border-border hover:border-primary cursor-pointer'
+          }`}
+        >
           {formData.coverImage ? (
-            <img
-              src={formData.coverImage}
-              alt="封面預覽"
-              className="w-full h-full object-cover rounded-xl"
-            />
+            <>
+              <img
+                src={formData.coverImage}
+                alt="封面預覽"
+                className="w-full h-full object-cover"
+              />
+              {/* 覆蓋層與操作按鈕 */}
+              <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                <button
+                  type="button"
+                  onClick={handleClickUpload}
+                  className="p-3 bg-white rounded-full text-foreground hover:bg-gray-100 transition-colors"
+                  title="更換圖片"
+                >
+                  <Upload className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="p-3 bg-white rounded-full text-red-500 hover:bg-red-50 transition-colors"
+                  title="移除圖片"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </>
+          ) : isUploading ? (
+            <div className="text-center">
+              <Loader2 className="w-8 h-8 text-primary mx-auto mb-2 animate-spin" />
+              <span className="text-sm text-foreground-muted">
+                上傳中... {uploadProgress?.progress.toFixed(0)}%
+              </span>
+              {/* 進度條 */}
+              <div className="w-48 h-2 bg-gray-200 rounded-full mt-3 overflow-hidden">
+                <div
+                  className="h-full bg-primary transition-all duration-300"
+                  style={{ width: `${uploadProgress?.progress || 0}%` }}
+                />
+              </div>
+            </div>
           ) : (
             <div className="text-center">
-              <Image className="w-8 h-8 text-foreground-muted mx-auto mb-2" />
-              <span className="text-sm text-foreground-muted">上傳圖片</span>
+              <Upload className="w-8 h-8 text-foreground-muted mx-auto mb-2" />
+              <span className="text-sm text-foreground-muted">點擊上傳圖片</span>
+              <p className="text-xs text-foreground-muted mt-1">
+                支援 JPG、PNG、GIF、WebP，最大 5MB
+              </p>
             </div>
           )}
         </div>
-        <p className="text-xs text-foreground-muted mt-2">
-          圖片上傳功能即將推出
-        </p>
+        
+        {formData.coverImage && (
+          <p className="text-xs text-foreground-muted mt-2">
+            點擊圖片可更換或移除
+          </p>
+        )}
       </div>
 
       {/* 送出按鈕 */}

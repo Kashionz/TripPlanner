@@ -94,6 +94,16 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
+  // 跳過 Firebase Storage 請求（避免 CORS 問題）
+  if (url.hostname.includes('firebasestorage.googleapis.com')) {
+    return
+  }
+
+  // 跳過 POST/PUT/DELETE 請求（這些不應被快取）
+  if (request.method !== 'GET') {
+    return
+  }
+
   // 根據 URL 選擇快取策略
   if (matchesPattern(url.href, CACHE_STRATEGIES.networkFirst)) {
     event.respondWith(networkFirst(request))
