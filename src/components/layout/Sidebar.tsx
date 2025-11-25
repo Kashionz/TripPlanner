@@ -1,8 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
-import { 
-  Home, 
-  Map, 
-  Plus, 
+import {
+  Map,
+  Plus,
   Calendar,
   Settings,
   ChevronLeft,
@@ -18,7 +17,6 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { icon: <Home className="w-5 h-5" />, label: '首頁', href: '/dashboard' },
   { icon: <Map className="w-5 h-5" />, label: '我的行程', href: '/dashboard' },
   { icon: <Calendar className="w-5 h-5" />, label: '日曆', href: '/calendar' },
 ]

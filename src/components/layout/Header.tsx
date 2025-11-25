@@ -33,21 +33,6 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* Center: Navigation (Desktop) */}
-        <nav className="hidden md:flex items-center gap-8">
-          <Link
-            to="/"
-            className="text-foreground-secondary hover:text-foreground transition-colors"
-          >
-            首頁
-          </Link>
-          <Link
-            to="/dashboard"
-            className="text-foreground-secondary hover:text-foreground transition-colors"
-          >
-            我的行程
-          </Link>
-        </nav>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2">

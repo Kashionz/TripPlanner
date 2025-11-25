@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-import { Plus } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { useTrips } from '@/hooks/useTrip'
 import TripList from '@/components/trip/TripList'
@@ -19,23 +17,13 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8 animate-japanese-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-light text-foreground mb-1">
-            我的行程
-          </h1>
-          <p className="text-foreground-secondary">
-            歡迎回來，{user?.displayName || '旅人'}
-          </p>
-        </div>
-
-        <Link
-          to="/trip/new"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary-dark transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
-        >
-          <Plus className="w-5 h-5" />
-          新增行程
-        </Link>
+      <div>
+        <h1 className="text-3xl font-light text-foreground mb-1">
+          我的行程
+        </h1>
+        <p className="text-foreground-secondary">
+          歡迎回來，{user?.displayName || '旅人'}
+        </p>
       </div>
 
       {/* Trip Stats */}
