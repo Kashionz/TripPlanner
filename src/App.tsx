@@ -1,25 +1,27 @@
-import { useEffect, lazy, Suspense } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { Loader2 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
-import { useUIStore } from '@/stores/uiStore'
+import { useSettingsStore } from '@/stores/settingsStore'
+import { Loader2 } from 'lucide-react'
+import { lazy, Suspense, useEffect } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
 // Layout (不懶載入，因為是核心元件)
-import Layout from '@/components/layout/Layout'
 import AuthLayout from '@/components/layout/AuthLayout'
+import Layout from '@/components/layout/Layout'
 
 // 懶載入頁面
 const HomePage = lazy(() => import('@/pages/HomePage'))
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
+const CalendarPage = lazy(() => import('@/pages/CalendarPage'))
 const TripDetailPage = lazy(() => import('@/pages/TripDetailPage'))
 const TripEditPage = lazy(() => import('@/pages/TripEditPage'))
 const ExpensePage = lazy(() => import('@/pages/ExpensePage'))
+const SettingsPage = lazy(() => import('@/pages/SettingsPage'))
 const InvitePage = lazy(() => import('@/pages/InvitePage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
 // PWA Components
-import { InstallPrompt, UpdatePrompt, OfflineBanner } from '@/components/pwa'
+import { InstallPrompt, OfflineBanner, UpdatePrompt } from '@/components/pwa'
 
 // 載入中元件
 function PageLoader() {
@@ -78,7 +80,10 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 
 function App() {
   const initialize = useAuthStore((state) => state.initialize)
-  const theme = useUIStore((state) => state.theme)
+  const user = useAuthStore((state) => state.user)
+  const subscribeToSettings = useSettingsStore((state) => state.subscribeToSettings)
+  const fetchSettings = useSettingsStore((state) => state.fetchSettings)
+  const cleanup = useSettingsStore((state) => state.cleanup)
 
   // 初始化認證狀態監聽
   useEffect(() => {
@@ -86,10 +91,24 @@ function App() {
     return () => unsubscribe()
   }, [initialize])
 
-  // 初始化主題
+  // 全域訂閱設定變更
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark')
-  }, [theme])
+    if (user) {
+      console.log('[App] 開始訂閱使用者設定:', user.id)
+      // 先獲取一次設定，確保有初始資料
+      fetchSettings(user.id).then(() => {
+        // 然後訂閱後續變更
+        subscribeToSettings(user.id)
+      })
+    } else {
+      console.log('[App] 清理設定訂閱')
+      cleanup()
+    }
+
+    return () => {
+      cleanup()
+    }
+  }, [user, subscribeToSettings, fetchSettings, cleanup])
 
   return (
     <>
@@ -131,6 +150,19 @@ function App() {
               <Layout>
                 <SuspenseWrapper>
                   <DashboardPage />
+                </SuspenseWrapper>
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/calendar"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <SuspenseWrapper>
+                  <CalendarPage />
                 </SuspenseWrapper>
               </Layout>
             </ProtectedRoute>
@@ -183,6 +215,19 @@ function App() {
               <Layout>
                 <SuspenseWrapper>
                   <ExpensePage />
+                </SuspenseWrapper>
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <SuspenseWrapper>
+                  <SettingsPage />
                 </SuspenseWrapper>
               </Layout>
             </ProtectedRoute>

@@ -1,12 +1,12 @@
 import NotificationDropdown from '@/components/collaboration/NotificationDropdown'
 import { useAuthStore } from '@/stores/authStore'
 import { useUIStore } from '@/stores/uiStore'
-import { LogOut, MapPin, Menu, Moon, Sun, User } from 'lucide-react'
+import { LogOut, MapPin, Menu, User } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export default function Header() {
   const { user, signOut } = useAuthStore()
-  const { theme, toggleTheme, setMobileMenuOpen } = useUIStore()
+  const { setMobileMenuOpen } = useUIStore()
 
   return (
     <header className="fixed top-0 left-0 right-0 h-14 sm:h-16 bg-white/80 backdrop-blur-md border-b border-border z-30 safe-top">
@@ -36,19 +36,6 @@ export default function Header() {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-1 sm:gap-2">
-          {/* Theme Toggle - 手機版隱藏，改用系統主題 */}
-          <button
-            onClick={toggleTheme}
-            className="hidden sm:flex touch-target p-2 rounded-lg hover:bg-background-secondary transition-colors"
-            aria-label={theme === 'light' ? '切換深色模式' : '切換淺色模式'}
-          >
-            {theme === 'light' ? (
-              <Moon className="w-5 h-5 text-foreground-secondary" />
-            ) : (
-              <Sun className="w-5 h-5 text-foreground-secondary" />
-            )}
-          </button>
-
           {/* Notifications (only for logged in users) */}
           {user && <NotificationDropdown />}
 

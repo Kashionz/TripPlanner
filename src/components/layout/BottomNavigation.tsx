@@ -18,9 +18,9 @@ const navItems: NavItem[] = [
   },
   {
     icon: Calendar,
-    label: '行程',
-    href: '/dashboard',
-    matchPaths: ['/trip']
+    label: '日曆',
+    href: '/calendar',
+    matchPaths: ['/calendar']
   },
   {
     icon: PlusCircle,
@@ -37,7 +37,7 @@ const navItems: NavItem[] = [
   {
     icon: Settings,
     label: '設定',
-    href: '/dashboard',
+    href: '/settings',
     matchPaths: ['/settings']
   }
 ]

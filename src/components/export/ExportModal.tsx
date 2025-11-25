@@ -1,3 +1,4 @@
+import { exportTripToICal } from '@/services/calendarExportService'
 import {
   downloadFile,
   exportExpensesToCSV,
@@ -12,6 +13,7 @@ import type { Place } from '@/types/place'
 import type { TripWithDetails } from '@/types/trip'
 import {
   AlertCircle,
+  Calendar,
   CheckCircle,
   Download,
   FileJson,
@@ -34,7 +36,7 @@ interface ExportModalProps {
 }
 
 interface ExportOption {
-  id: ExportFormat | 'csv-expense' | 'print'
+  id: ExportFormat | 'csv-expense' | 'print' | 'ical'
   name: string
   description: string
   icon: React.ReactNode
@@ -47,6 +49,12 @@ const exportOptions: ExportOption[] = [
     name: 'PDF 文件',
     description: '完整行程報告，適合列印或分享',
     icon: <FileText className="w-6 h-6" />,
+  },
+  {
+    id: 'ical',
+    name: 'iCal 日曆',
+    description: '匯出為日曆格式，可匯入 Google Calendar / Apple Calendar',
+    icon: <Calendar className="w-6 h-6" />,
   },
   {
     id: 'csv',
@@ -130,6 +138,12 @@ export default function ExportModal({
         case 'json':
           result = await exportToJSON(exportData, setProgress)
           if (result.success) downloadFile(result)
+          break
+
+        case 'ical':
+          setProgress({ status: 'preparing', progress: 50, message: '生成 iCal 檔案...' })
+          await exportTripToICal(trip)
+          setProgress({ status: 'complete', progress: 100, message: 'iCal 檔案已下載' })
           break
 
         case 'print':

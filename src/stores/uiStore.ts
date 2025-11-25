@@ -2,9 +2,6 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 interface UIState {
-  // 主題
-  theme: 'light' | 'dark'
-  
   // 側邊欄
   sidebarOpen: boolean
   sidebarCollapsed: boolean
@@ -20,8 +17,6 @@ interface UIState {
   toasts: Toast[]
   
   // Actions
-  setTheme: (theme: 'light' | 'dark') => void
-  toggleTheme: () => void
   setSidebarOpen: (open: boolean) => void
   toggleSidebar: () => void
   setSidebarCollapsed: (collapsed: boolean) => void
@@ -43,26 +38,12 @@ interface Toast {
 export const useUIStore = create<UIState>()(
   persist(
     (set, get) => ({
-      theme: 'light',
       sidebarOpen: true,
       sidebarCollapsed: false,
       mobileMenuOpen: false,
       activeModal: null,
       modalData: null,
       toasts: [],
-
-      setTheme: (theme) => {
-        set({ theme })
-        // 更新 document class
-        if (typeof document !== 'undefined') {
-          document.documentElement.classList.toggle('dark', theme === 'dark')
-        }
-      },
-
-      toggleTheme: () => {
-        const newTheme = get().theme === 'light' ? 'dark' : 'light'
-        get().setTheme(newTheme)
-      },
 
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
 
@@ -105,25 +86,9 @@ export const useUIStore = create<UIState>()(
     }),
     {
       name: 'ui-storage',
-      partialize: (state) => ({ 
-        theme: state.theme,
+      partialize: (state) => ({
         sidebarCollapsed: state.sidebarCollapsed,
       }),
     }
   )
 )
-
-// 初始化主題
-if (typeof document !== 'undefined') {
-  const savedTheme = localStorage.getItem('ui-storage')
-  if (savedTheme) {
-    try {
-      const { state } = JSON.parse(savedTheme)
-      if (state?.theme === 'dark') {
-        document.documentElement.classList.add('dark')
-      }
-    } catch (e) {
-      // ignore
-    }
-  }
-}

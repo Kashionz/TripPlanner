@@ -40,33 +40,34 @@
   }
 
   .dark {
-    --background: 0 0% 10%;
-    --foreground: 0 0% 96%;
+    /* 深色模式 - 日系簡約風格 */
+    --background: 0 0% 10%;           /* #1A1A1A - 主背景 */
+    --foreground: 0 0% 96%;          /* #F5F5F5 - 主要文字 */
 
-    --card: 0 0% 14%;
-    --card-foreground: 0 0% 96%;
+    --card: 0 0% 14%;                /* #242424 - 卡片背景 */
+    --card-foreground: 0 0% 96%;     /* #F5F5F5 - 卡片文字 */
 
-    --popover: 0 0% 14%;
-    --popover-foreground: 0 0% 96%;
+    --popover: 0 0% 14%;             /* #242424 - 彈出層背景 */
+    --popover-foreground: 0 0% 96%;  /* #F5F5F5 - 彈出層文字 */
 
-    --primary: 179 15% 48%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 179 15% 52%;          /* #6B8B8A - 青磁色（稍微提亮） */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF - 主色文字 */
 
-    --secondary: 100 12% 60%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 100 12% 64%;        /* #9BAE94 - 若竹色（稍微提亮） */
+    --secondary-foreground: 0 0% 100%; /* #FFFFFF - 次色文字 */
 
-    --accent: 43 45% 62%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 43 45% 66%;            /* #D4B46A - 金茶色（稍微提亮） */
+    --accent-foreground: 0 0% 10%;   /* #1A1A1A - 強調色文字 */
 
-    --muted: 0 0% 18%;
-    --muted-foreground: 0 0% 67%;
+    --muted: 0 0% 18%;               /* #2E2E2E - 柔和背景 */
+    --muted-foreground: 0 0% 67%;    /* #ABABAB - 柔和文字 */
 
-    --destructive: 0 30% 50%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 35% 58%;        /* #C88080 - 錯誤色（稍微提亮） */
+    --destructive-foreground: 0 0% 100%; /* #FFFFFF - 錯誤文字 */
 
-    --border: 0 0% 23%;
-    --input: 0 0% 23%;
-    --ring: 179 15% 48%;
+    --border: 0 0% 23%;              /* #3A3A3A - 邊框 */
+    --input: 0 0% 23%;               /* #3A3A3A - 輸入框邊框 */
+    --ring: 179 15% 52%;             /* #6B8B8A - 焦點環 */
   }
 }
 
@@ -111,9 +112,13 @@
 @layer components {
   /* 日系風格卡片 */
   .card-japanese {
-    @apply bg-white rounded-2xl border border-border p-6
+    @apply bg-card rounded-2xl border border-border p-6
            transition-all duration-300
            hover:shadow-md hover:border-border-dark;
+  }
+
+  .dark .card-japanese {
+    @apply hover:bg-card/80;
   }
 
   /* 日系風格按鈕 */
@@ -123,19 +128,27 @@
   }
 
   .btn-japanese-primary {
-    @apply btn-japanese bg-primary text-white
-           hover:bg-primary-dark hover:shadow-sm
+    @apply btn-japanese bg-primary text-primary-foreground
+           hover:bg-primary/90 hover:shadow-sm
            hover:-translate-y-0.5;
   }
 
   .btn-japanese-secondary {
     @apply btn-japanese bg-transparent border border-border text-foreground-secondary
-           hover:bg-background-secondary;
+           hover:bg-muted;
   }
 
   .btn-japanese-ghost {
     @apply btn-japanese bg-transparent text-primary
            hover:bg-primary/10;
+  }
+
+  .dark .btn-japanese-primary {
+    @apply hover:bg-primary/80;
+  }
+
+  .dark .btn-japanese-secondary {
+    @apply hover:bg-muted/50;
   }
 
   /* 日系風格輸入框 */
@@ -283,5 +296,18 @@
   /* 毛玻璃效果 */
   .glass-japanese {
     @apply bg-white/80 backdrop-blur-md;
+  }
+
+  .dark .glass-japanese {
+    @apply bg-card/80;
+  }
+
+  /* 深色模式陰影調整 */
+  .dark .shadow-japanese {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .dark .shadow-japanese-lg {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
   }
 }

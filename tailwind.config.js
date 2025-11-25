@@ -21,41 +21,41 @@ export default {
       colors: {
         // 主色系 - 青磁色
         primary: {
-          DEFAULT: "#5B7B7A",
+          DEFAULT: "hsl(var(--primary))",
           light: "#6B8B8A",
           dark: "#4A6A69",
-          foreground: "#FFFFFF",
+          foreground: "hsl(var(--primary-foreground))",
         },
         // 次色系 - 若竹色
         secondary: {
-          DEFAULT: "#8B9D83",
+          DEFAULT: "hsl(var(--secondary))",
           light: "#9BAE94",
           dark: "#7A8C72",
-          foreground: "#FFFFFF",
+          foreground: "hsl(var(--secondary-foreground))",
         },
         // 強調色 - 金茶色
         accent: {
-          DEFAULT: "#C4A35A",
+          DEFAULT: "hsl(var(--accent))",
           light: "#D4B46A",
           dark: "#B39249",
-          foreground: "#FFFFFF",
+          foreground: "hsl(var(--accent-foreground))",
         },
         // 背景色
         background: {
-          DEFAULT: "#FAFAF8",  // 生成色
-          secondary: "#F5F5F0", // 白練色
-          tertiary: "#EEEDE8",  // 象牙色
+          DEFAULT: "hsl(var(--background))",
+          secondary: "hsl(var(--muted))",
+          tertiary: "hsl(var(--muted) / 0.5)",
         },
         // 文字色
         foreground: {
-          DEFAULT: "#2D2D2D",   // 墨色
-          secondary: "#5C5C5C", // 鼠色
-          muted: "#8C8C8C",     // 銀鼠色
+          DEFAULT: "hsl(var(--foreground))",
+          secondary: "hsl(var(--muted-foreground))",
+          muted: "hsl(var(--muted-foreground) / 0.7)",
         },
         // 邊框色
         border: {
-          DEFAULT: "#E5E5E0",
-          dark: "#D5D5D0",
+          DEFAULT: "hsl(var(--border))",
+          dark: "hsl(var(--border) / 0.8)",
         },
         // 語意化色彩
         success: {
@@ -80,23 +80,23 @@ export default {
         },
         // shadcn/ui 需要的色彩
         card: {
-          DEFAULT: "#FFFFFF",
-          foreground: "#2D2D2D",
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
         },
         popover: {
-          DEFAULT: "#FFFFFF",
-          foreground: "#2D2D2D",
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
         },
         muted: {
-          DEFAULT: "#F5F5F0",
-          foreground: "#5C5C5C",
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
         destructive: {
-          DEFAULT: "#B87070",
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
         },
-        ring: "#5B7B7A",
-        input: "#E5E5E0",
+        ring: "hsl(var(--ring))",
+        input: "hsl(var(--input))",
       },
       // 字體設定
       fontFamily: {

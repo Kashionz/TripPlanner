@@ -1,7 +1,16 @@
 // Service Worker for Travel Planner PWA
-const CACHE_NAME = 'travel-planner-v1'
-const STATIC_CACHE = 'travel-planner-static-v1'
-const DYNAMIC_CACHE = 'travel-planner-dynamic-v1'
+const VERSION = '1.1.0'
+const CACHE_NAME = `travel-planner-v${VERSION}`
+const STATIC_CACHE = `travel-planner-static-v${VERSION}`
+const DYNAMIC_CACHE = `travel-planner-dynamic-v${VERSION}`
+const IMAGE_CACHE = `travel-planner-images-v${VERSION}`
+
+// 快取大小限制
+const CACHE_LIMITS = {
+  images: 50,      // 圖片快取上限
+  dynamic: 100,    // 動態資源快取上限
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7天（毫秒）
+}
 
 // 靜態資源快取
 const STATIC_ASSETS = [
@@ -9,6 +18,7 @@ const STATIC_ASSETS = [
   '/index.html',
   '/manifest.json',
   '/favicon.svg',
+  '/offline.html',
 ]
 
 // 網路請求策略
@@ -21,9 +31,13 @@ const CACHE_STRATEGIES = {
   ],
   // 快取優先 (靜態資源)
   cacheFirst: [
-    /\.(js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif|webp|ico)$/,
+    /\.(js|css|woff2?|ttf|eot)$/,
     /fonts\.googleapis\.com/,
     /fonts\.gstatic\.com/,
+  ],
+  // 圖片快取策略
+  imageCache: [
+    /\.(png|jpg|jpeg|gif|webp|svg|ico)$/,
   ],
   // 只用快取 (離線資源)
   cacheOnly: [
@@ -56,26 +70,30 @@ self.addEventListener('activate', (event) => {
   console.log('[SW] Activating Service Worker...')
   
   event.waitUntil(
-    caches.keys()
-      .then((cacheNames) => {
+    Promise.all([
+      // 清理舊快取
+      caches.keys().then((cacheNames) => {
         return Promise.all(
           cacheNames
             .filter((name) => {
               // 刪除舊版本快取
-              return name.startsWith('travel-planner-') && 
-                     name !== STATIC_CACHE && 
-                     name !== DYNAMIC_CACHE
+              return name.startsWith('travel-planner-') &&
+                     name !== STATIC_CACHE &&
+                     name !== DYNAMIC_CACHE &&
+                     name !== IMAGE_CACHE
             })
             .map((name) => {
               console.log('[SW] Deleting old cache:', name)
               return caches.delete(name)
             })
         )
-      })
-      .then(() => {
-        console.log('[SW] Claiming clients')
-        return self.clients.claim()
-      })
+      }),
+      // 清理過期快取
+      cleanExpiredCache(),
+    ]).then(() => {
+      console.log('[SW] Claiming clients')
+      return self.clients.claim()
+    })
   )
 })
 
@@ -107,6 +125,8 @@ self.addEventListener('fetch', (event) => {
   // 根據 URL 選擇快取策略
   if (matchesPattern(url.href, CACHE_STRATEGIES.networkFirst)) {
     event.respondWith(networkFirst(request))
+  } else if (matchesPattern(url.href, CACHE_STRATEGIES.imageCache)) {
+    event.respondWith(imageCache(request))
   } else if (matchesPattern(url.href, CACHE_STRATEGIES.cacheFirst)) {
     event.respondWith(cacheFirst(request))
   } else if (matchesPattern(url.href, CACHE_STRATEGIES.cacheOnly)) {
@@ -188,6 +208,118 @@ async function cacheOnly(request) {
     status: 503,
     statusText: 'Service Unavailable',
   })
+}
+
+// 圖片快取策略（帶大小限制）
+async function imageCache(request) {
+  const cachedResponse = await caches.match(request)
+  
+  if (cachedResponse) {
+    // 檢查快取時間
+    const cacheTime = await getCacheTime(request)
+    if (cacheTime && Date.now() - cacheTime < CACHE_LIMITS.maxAge) {
+      return cachedResponse
+    }
+  }
+  
+  try {
+    const networkResponse = await fetch(request)
+    
+    if (networkResponse.ok) {
+      const cache = await caches.open(IMAGE_CACHE)
+      
+      // 限制快取大小
+      await limitCacheSize(IMAGE_CACHE, CACHE_LIMITS.images)
+      
+      // 儲存快取時間
+      await cache.put(request, networkResponse.clone())
+      await setCacheTime(request, Date.now())
+    }
+    
+    return networkResponse
+  } catch (error) {
+    // 網路失敗，返回快取（即使過期）
+    if (cachedResponse) {
+      return cachedResponse
+    }
+    throw error
+  }
+}
+
+// 限制快取大小
+async function limitCacheSize(cacheName, maxItems) {
+  const cache = await caches.open(cacheName)
+  const keys = await cache.keys()
+  
+  if (keys.length > maxItems) {
+    // 刪除最舊的項目
+    const deleteCount = keys.length - maxItems
+    for (let i = 0; i < deleteCount; i++) {
+      await cache.delete(keys[i])
+    }
+    console.log(`[SW] Trimmed ${deleteCount} items from ${cacheName}`)
+  }
+}
+
+// 儲存快取時間（使用 Cache API 的 metadata）
+async function setCacheTime(request, time) {
+  const url = new URL(request.url)
+  const timeKey = `${url.pathname}-cache-time`
+  
+  try {
+    const cache = await caches.open(DYNAMIC_CACHE)
+    await cache.put(
+      timeKey,
+      new Response(time.toString(), {
+        headers: { 'Content-Type': 'text/plain' }
+      })
+    )
+  } catch (error) {
+    console.error('[SW] Failed to set cache time:', error)
+  }
+}
+
+// 取得快取時間
+async function getCacheTime(request) {
+  const url = new URL(request.url)
+  const timeKey = `${url.pathname}-cache-time`
+  
+  try {
+    const cache = await caches.open(DYNAMIC_CACHE)
+    const response = await cache.match(timeKey)
+    
+    if (response) {
+      const timeStr = await response.text()
+      return parseInt(timeStr, 10)
+    }
+  } catch (error) {
+    console.error('[SW] Failed to get cache time:', error)
+  }
+  
+  return null
+}
+
+// 清理過期快取
+async function cleanExpiredCache() {
+  const cacheNames = [DYNAMIC_CACHE, IMAGE_CACHE]
+  
+  for (const cacheName of cacheNames) {
+    try {
+      const cache = await caches.open(cacheName)
+      const keys = await cache.keys()
+      
+      for (const request of keys) {
+        const cacheTime = await getCacheTime(request)
+        
+        if (cacheTime && Date.now() - cacheTime > CACHE_LIMITS.maxAge) {
+          await cache.delete(request)
+          console.log('[SW] Deleted expired cache:', request.url)
+        }
+      }
+    } catch (error) {
+      console.error('[SW] Failed to clean cache:', error)
+    }
+  }
 }
 
 // 背景更新快取
@@ -298,19 +430,45 @@ self.addEventListener('message', (event) => {
 
 // 快取指定 URL
 async function cacheUrls(urls) {
-  const cache = await caches.open(DYNAMIC_CACHE)
-  await cache.addAll(urls)
-  console.log('[SW] Cached URLs:', urls)
+  try {
+    const cache = await caches.open(DYNAMIC_CACHE)
+    
+    // 批次快取，避免一次快取太多
+    const batchSize = 10
+    for (let i = 0; i < urls.length; i += batchSize) {
+      const batch = urls.slice(i, i + batchSize)
+      await Promise.all(
+        batch.map(url =>
+          cache.add(url).catch(err =>
+            console.warn('[SW] Failed to cache:', url, err)
+          )
+        )
+      )
+    }
+    
+    console.log('[SW] Cached URLs:', urls.length)
+  } catch (error) {
+    console.error('[SW] Cache URLs failed:', error)
+  }
 }
 
 // 清除快取
 async function clearCache(cacheName) {
-  if (cacheName) {
-    await caches.delete(cacheName)
-    console.log('[SW] Cleared cache:', cacheName)
-  } else {
-    const cacheNames = await caches.keys()
-    await Promise.all(cacheNames.map(name => caches.delete(name)))
-    console.log('[SW] Cleared all caches')
+  try {
+    if (cacheName) {
+      await caches.delete(cacheName)
+      console.log('[SW] Cleared cache:', cacheName)
+    } else {
+      const cacheNames = await caches.keys()
+      await Promise.all(cacheNames.map(name => caches.delete(name)))
+      console.log('[SW] Cleared all caches')
+    }
+  } catch (error) {
+    console.error('[SW] Clear cache failed:', error)
   }
 }
+
+// 定期清理過期快取（每小時）
+setInterval(() => {
+  cleanExpiredCache()
+}, 60 * 60 * 1000)
