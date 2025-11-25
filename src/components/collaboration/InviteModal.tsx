@@ -1,19 +1,19 @@
-import { useState, useEffect } from 'react'
-import {
-  X,
-  Copy,
-  Check,
-  Link,
-  Mail,
-  UserPlus,
-  Loader2,
-  Clock,
-  Trash2,
-  AlertCircle,
-} from 'lucide-react'
-import { useTripInvites, useAcceptInvite } from '@/hooks/useCollaboration'
-import type { MemberRole } from '@/types/trip'
+import { useAcceptInvite, useTripInvites } from '@/hooks/useCollaboration'
 import type { Invite } from '@/types/collaboration'
+import type { MemberRole } from '@/types/trip'
+import {
+    AlertCircle,
+    Check,
+    Clock,
+    Copy,
+    Link,
+    Loader2,
+    Mail,
+    Trash2,
+    UserPlus,
+    X,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface InviteModalProps {
   tripId: string
@@ -109,66 +109,66 @@ export default function InviteModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-hidden animate-japanese-fade-in">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl max-w-lg w-full max-h-[90vh] overflow-hidden animate-japanese-fade-in safe-bottom">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-medium text-foreground flex items-center gap-2">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-border">
+          <h2 className="text-base sm:text-lg font-medium text-foreground flex items-center gap-2">
             <UserPlus className="w-5 h-5 text-primary" />
             邀請成員
           </h2>
           <button
             onClick={handleClose}
-            className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+            className="touch-target p-2 rounded-lg hover:bg-background-secondary transition-colors"
           >
             <X className="w-5 h-5 text-foreground-secondary" />
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex border-b border-border">
+        {/* Tabs - 手機版縮小間距 */}
+        <div className="flex border-b border-border overflow-x-auto">
           <button
             onClick={() => setActiveTab('link')}
-            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+            className={`touch-target flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
               activeTab === 'link'
                 ? 'text-primary border-b-2 border-primary'
                 : 'text-foreground-muted hover:text-foreground-secondary'
             }`}
           >
-            <Link className="w-4 h-4 inline-block mr-2" />
+            <Link className="w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block mr-1 sm:mr-2" />
             邀請連結
           </button>
           <button
             onClick={() => setActiveTab('email')}
-            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+            className={`touch-target flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
               activeTab === 'email'
                 ? 'text-primary border-b-2 border-primary'
                 : 'text-foreground-muted hover:text-foreground-secondary'
             }`}
           >
-            <Mail className="w-4 h-4 inline-block mr-2" />
+            <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block mr-1 sm:mr-2" />
             Email 邀請
           </button>
           <button
             onClick={() => setActiveTab('pending')}
-            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors relative ${
+            className={`touch-target flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium transition-colors relative whitespace-nowrap ${
               activeTab === 'pending'
                 ? 'text-primary border-b-2 border-primary'
                 : 'text-foreground-muted hover:text-foreground-secondary'
             }`}
           >
-            <Clock className="w-4 h-4 inline-block mr-2" />
+            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block mr-1 sm:mr-2" />
             待處理
             {pendingInvites.length > 0 && (
-              <span className="absolute top-2 right-4 w-5 h-5 bg-accent text-white text-xs rounded-full flex items-center justify-center">
+              <span className="absolute top-1 sm:top-2 right-2 sm:right-4 w-4 h-4 sm:w-5 sm:h-5 bg-accent text-white text-[10px] sm:text-xs rounded-full flex items-center justify-center">
                 {pendingInvites.length}
               </span>
             )}
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[60vh]">
+        {/* Content - 手機版減少 padding */}
+        <div className="p-4 sm:p-6 overflow-y-auto max-h-[60vh]">
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
               <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />

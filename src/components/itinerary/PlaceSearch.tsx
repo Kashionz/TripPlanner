@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
-import { Search, MapPin, X, Loader2, Star } from 'lucide-react'
-import { useJsApiLoader, Autocomplete } from '@react-google-maps/api'
-import { detectPlaceCategory, getCategoryLabel, getCategoryColor } from '@/services/placeService'
+import { detectPlaceCategory, getCategoryColor, getCategoryLabel } from '@/services/placeService'
 import type { PlaceCategory } from '@/types/place'
+import { Autocomplete, useJsApiLoader } from '@react-google-maps/api'
+import { Loader2, MapPin, Search, Star, X } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const libraries: ('places')[] = ['places']
 
@@ -231,12 +231,12 @@ export function PlaceSearchModal({ isOpen, onClose, onPlaceAdd }: PlaceSearchMod
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 p-4 pt-20 overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 flex items-start sm:items-start justify-center z-50 p-0 sm:p-4 sm:pt-20 overflow-y-auto">
       <div
         className="fixed inset-0"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-lg">
+      <div className="relative w-full max-w-lg mt-0 sm:mt-0">
         {selectedPlace ? (
           <PlacePreview
             place={selectedPlace}
@@ -244,17 +244,17 @@ export function PlaceSearchModal({ isOpen, onClose, onPlaceAdd }: PlaceSearchMod
             onCancel={handleCancel}
           />
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4 p-4 sm:p-0">
             <PlaceSearch
               onPlaceSelect={handlePlaceSelect}
               onClose={onClose}
             />
-            <div className="bg-white rounded-2xl border border-border p-6 text-center">
-              <MapPin className="w-12 h-12 text-foreground-muted mx-auto mb-3" />
-              <p className="text-foreground-secondary">
+            <div className="bg-white rounded-xl sm:rounded-2xl border border-border p-4 sm:p-6 text-center">
+              <MapPin className="w-10 h-10 sm:w-12 sm:h-12 text-foreground-muted mx-auto mb-2 sm:mb-3" />
+              <p className="text-sm sm:text-base text-foreground-secondary">
                 搜尋並選擇要加入的景點
               </p>
-              <p className="text-sm text-foreground-muted mt-1">
+              <p className="text-xs sm:text-sm text-foreground-muted mt-1">
                 可以搜尋景點名稱、餐廳、飯店等
               </p>
             </div>

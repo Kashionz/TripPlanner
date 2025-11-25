@@ -1,7 +1,8 @@
+import { useUIStore } from '@/stores/uiStore'
 import { ReactNode } from 'react'
+import BottomNavigation from './BottomNavigation'
 import Header from './Header'
 import Sidebar from './Sidebar'
-import { useUIStore } from '@/stores/uiStore'
 
 interface LayoutProps {
   children: ReactNode
@@ -19,7 +20,7 @@ export default function Layout({ children }: LayoutProps) {
         {/* Sidebar - Desktop */}
         <aside
           className={`
-            hidden lg:block fixed left-0 top-16 h-[calc(100vh-4rem)] 
+            hidden lg:block fixed left-0 top-14 sm:top-16 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)]
             bg-white border-r border-border
             transition-all duration-300 ease-out
             ${sidebarCollapsed ? 'w-16' : 'w-64'}
@@ -31,12 +32,13 @@ export default function Layout({ children }: LayoutProps) {
         {/* Main Content */}
         <main
           className={`
-            flex-1 min-h-[calc(100vh-4rem)] mt-16
+            flex-1 min-h-[calc(100vh-3.5rem)] sm:min-h-[calc(100vh-4rem)] mt-14 sm:mt-16
             transition-all duration-300 ease-out
             ${sidebarOpen && !sidebarCollapsed ? 'lg:ml-64' : 'lg:ml-16'}
           `}
         >
-          <div className="p-6 md:p-8 lg:p-12">
+          {/* 手機版需要額外的底部 padding 來避免被底部導航欄遮擋 */}
+          <div className="p-4 pb-20 sm:p-6 md:p-8 lg:p-12 lg:pb-12">
             {children}
           </div>
         </main>
@@ -44,6 +46,9 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Mobile Sidebar Overlay */}
       <MobileSidebarOverlay />
+
+      {/* Bottom Navigation - Mobile Only */}
+      <BottomNavigation />
     </div>
   )
 }

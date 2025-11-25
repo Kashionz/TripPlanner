@@ -1,27 +1,27 @@
-import { useState, useCallback } from 'react'
 import {
-  X,
-  FileText,
-  FileSpreadsheet,
-  FileJson,
-  Printer,
-  Download,
-  Loader2,
-  CheckCircle,
-  AlertCircle,
-} from 'lucide-react'
-import type { TripWithDetails } from '@/types/trip'
-import type { Place } from '@/types/place'
-import type { Expense, ExpenseSummary } from '@/types/expense'
-import type { ExportFormat, ExportProgress } from '@/types/export'
-import {
-  exportToPDF,
-  exportItineraryToCSV,
-  exportExpensesToCSV,
-  exportToJSON,
   downloadFile,
+  exportExpensesToCSV,
+  exportItineraryToCSV,
+  exportToJSON,
+  exportToPDF,
   printContent,
 } from '@/services/exportService'
+import type { Expense, ExpenseSummary } from '@/types/expense'
+import type { ExportFormat, ExportProgress } from '@/types/export'
+import type { Place } from '@/types/place'
+import type { TripWithDetails } from '@/types/trip'
+import {
+  AlertCircle,
+  CheckCircle,
+  Download,
+  FileJson,
+  FileSpreadsheet,
+  FileText,
+  Loader2,
+  Printer,
+  X,
+} from 'lucide-react'
+import { useCallback, useState } from 'react'
 
 interface ExportModalProps {
   isOpen: boolean
@@ -165,21 +165,21 @@ export default function ExportModal({
   const hasExpenses = expenses && expenses.length > 0
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden animate-japanese-fade-in">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-lg overflow-hidden animate-japanese-fade-in safe-bottom">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-medium text-foreground">匯出行程</h2>
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-border">
+          <h2 className="text-base sm:text-lg font-medium text-foreground">匯出行程</h2>
           <button
             onClick={resetAndClose}
-            className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+            className="touch-target p-2 rounded-lg hover:bg-background-secondary transition-colors"
           >
             <X className="w-5 h-5 text-foreground-secondary" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* 匯出中狀態 */}
           {progress.status !== 'idle' && progress.status !== 'error' && progress.status !== 'complete' && (
             <div className="text-center py-8">
@@ -317,10 +317,10 @@ export default function ExportModal({
 
         {/* Footer */}
         {progress.status === 'idle' && (
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-background-secondary">
+          <div className="flex items-center justify-end gap-3 px-4 sm:px-6 py-3 sm:py-4 border-t border-border bg-background-secondary">
             <button
               onClick={resetAndClose}
-              className="px-4 py-2 text-foreground-secondary hover:text-foreground transition-colors"
+              className="touch-target px-3 sm:px-4 py-2 text-sm sm:text-base text-foreground-secondary hover:text-foreground transition-colors"
             >
               取消
             </button>
@@ -328,7 +328,7 @@ export default function ExportModal({
               onClick={handleExport}
               disabled={!selectedFormat}
               className={`
-                flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-colors
+                touch-target flex items-center gap-2 px-4 sm:px-6 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors
                 ${
                   selectedFormat
                     ? 'bg-primary text-white hover:bg-primary-dark'

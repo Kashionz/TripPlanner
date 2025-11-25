@@ -169,6 +169,34 @@
 }
 
 @layer utilities {
+  /* 安全區域支援 */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  /* 觸控友善尺寸 */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  .touch-target-lg {
+    @apply min-h-[48px] min-w-[48px];
+  }
+  
+  /* 手機隱藏 */
+  .mobile-hidden {
+    @apply hidden sm:block;
+  }
+  
+  /* 桌面隱藏 */
+  .desktop-hidden {
+    @apply block lg:hidden;
+  }
+
   /* 日系動畫效果 */
   .animate-japanese-fade-in {
     animation: japanese-fade-in 0.4s ease-out;
@@ -184,6 +212,25 @@
 
   .animate-slide-in-left {
     animation: slide-in-left 0.3s ease-out;
+  }
+  
+  /* 底部彈出動畫 */
+  .slide-up-enter {
+    transform: translateY(100%);
+  }
+  
+  .slide-up-enter-active {
+    transform: translateY(0);
+    transition: transform 300ms ease-out;
+  }
+  
+  /* 滑動刪除背景 */
+  .swipe-delete-bg {
+    @apply absolute inset-y-0 right-0 bg-red-500 flex items-center justify-end px-4 rounded-r-xl;
+  }
+  
+  .swipe-delete-bg svg {
+    @apply w-5 h-5 text-white;
   }
 
   @keyframes japanese-fade-in {

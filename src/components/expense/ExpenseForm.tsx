@@ -1,23 +1,23 @@
-import { useState, useEffect } from 'react'
+import { useExpenseSplit, type SplitMethod } from '@/hooks/useExpense'
 import {
-  X,
-  DollarSign,
-  Tag,
-  User,
-  Users,
-  Loader2,
-  ChevronDown,
-  Check,
-} from 'lucide-react'
+  EXPENSE_CATEGORIES,
+  getCategoryIcon,
+  getCategoryName,
+  SUPPORTED_CURRENCIES,
+} from '@/services/expenseService'
 import type { Expense, ExpenseCategory, ExpenseSplit } from '@/types/expense'
 import type { TripMember } from '@/types/trip'
 import {
-  getCategoryName,
-  getCategoryIcon,
-  EXPENSE_CATEGORIES,
-  SUPPORTED_CURRENCIES,
-} from '@/services/expenseService'
-import { useExpenseSplit, type SplitMethod } from '@/hooks/useExpense'
+  Check,
+  ChevronDown,
+  DollarSign,
+  Loader2,
+  Tag,
+  User,
+  Users,
+  X,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface ExpenseFormProps {
   members: TripMember[]
@@ -149,24 +149,24 @@ export default function ExpenseForm({
   )
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-hidden animate-japanese-fade-in">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl max-w-lg w-full max-h-[90vh] overflow-hidden animate-japanese-fade-in safe-bottom">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-medium text-foreground flex items-center gap-2">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-border">
+          <h2 className="text-base sm:text-lg font-medium text-foreground flex items-center gap-2">
             <DollarSign className="w-5 h-5 text-primary" />
             {isEditing ? '編輯費用' : '新增費用'}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+            className="touch-target p-2 rounded-lg hover:bg-background-secondary transition-colors"
           >
             <X className="w-5 h-5 text-foreground-secondary" />
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
           <div className="space-y-5">
             {/* 錯誤訊息 */}
             {error && (

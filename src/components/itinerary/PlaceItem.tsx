@@ -1,19 +1,19 @@
-import { useState } from 'react'
-import {
-  MapPin,
-  Clock,
-  GripVertical,
-  Edit2,
-  Trash2,
-  ChevronDown,
-  ChevronUp,
-  MoreVertical,
-  Navigation,
-} from 'lucide-react'
+import { formatDuration, getCategoryColor, getCategoryLabel } from '@/services/placeService'
 import type { Place, RouteInfo } from '@/types/place'
-import { getCategoryLabel, getCategoryColor, formatDuration } from '@/services/placeService'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import {
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  Edit2,
+  GripVertical,
+  MapPin,
+  MoreVertical,
+  Navigation,
+  Trash2,
+} from 'lucide-react'
+import { useState } from 'react'
 
 interface PlaceItemProps {
   place: Place
@@ -66,23 +66,23 @@ export default function PlaceItem({
         } ${isDragging ? 'shadow-lg' : ''}`}
       >
         <div
-          className="flex items-start gap-3 p-3 cursor-pointer"
+          className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 cursor-pointer"
           onClick={onSelect}
         >
-          {/* 拖拽手把 */}
+          {/* 拖拽手把 - 手機版加大 */}
           {isEditing && (
             <button
               {...attributes}
               {...listeners}
-              className="mt-1 p-1 rounded hover:bg-background-secondary cursor-grab active:cursor-grabbing"
+              className="touch-target-lg mt-1 p-1 sm:p-1.5 rounded hover:bg-background-secondary cursor-grab active:cursor-grabbing flex-shrink-0"
             >
-              <GripVertical className="w-4 h-4 text-foreground-muted" />
+              <GripVertical className="w-5 h-5 sm:w-4 sm:h-4 text-foreground-muted" />
             </button>
           )}
 
-          {/* 序號 */}
+          {/* 序號 - 手機版稍大 */}
           <div
-            className="w-7 h-7 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0 mt-0.5"
+            className="w-8 h-8 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0 mt-0.5"
             style={{ backgroundColor: categoryColor }}
           >
             {index + 1}
@@ -91,27 +91,28 @@ export default function PlaceItem({
           {/* 內容 */}
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <h4 className="font-medium text-foreground truncate">
+              <div className="min-w-0 flex-1">
+                <h4 className="text-sm sm:text-base font-medium text-foreground truncate">
                   {place.name}
                 </h4>
-                <p className="text-sm text-foreground-muted truncate flex items-center gap-1 mt-0.5">
+                <p className="text-xs sm:text-sm text-foreground-muted truncate flex items-center gap-1 mt-0.5">
                   <MapPin className="w-3 h-3 flex-shrink-0" />
-                  {place.address}
+                  <span className="truncate">{place.address}</span>
                 </p>
               </div>
 
-              {/* 時間 */}
+              {/* 時間 - 手機版簡化 */}
               {(place.startTime || place.duration) && (
                 <div className="text-right flex-shrink-0">
                   {place.startTime && (
-                    <div className="text-sm font-medium text-foreground">
+                    <div className="text-xs sm:text-sm font-medium text-foreground whitespace-nowrap">
                       {place.startTime}
                     </div>
                   )}
                   <div className="text-xs text-foreground-muted flex items-center gap-1 justify-end">
                     <Clock className="w-3 h-3" />
-                    {formatDuration(place.duration)}
+                    <span className="hidden sm:inline">{formatDuration(place.duration)}</span>
+                    <span className="sm:hidden">{place.duration}m</span>
                   </div>
                 </div>
               )}
@@ -120,7 +121,7 @@ export default function PlaceItem({
             {/* 標籤 */}
             <div className="flex items-center gap-2 mt-2">
               <span
-                className="px-2 py-0.5 rounded-full text-xs text-white"
+                className="px-2 py-0.5 rounded-full text-xs font-medium text-white"
                 style={{ backgroundColor: categoryColor }}
               >
                 {getCategoryLabel(place.category)}
@@ -132,7 +133,7 @@ export default function PlaceItem({
                     e.stopPropagation()
                     setShowDetails(!showDetails)
                   }}
-                  className="flex items-center gap-1 text-xs text-foreground-muted hover:text-foreground transition-colors"
+                  className="touch-target flex items-center gap-1 text-xs text-foreground-muted hover:text-foreground transition-colors"
                 >
                   備註
                   {showDetails ? (
@@ -145,17 +146,17 @@ export default function PlaceItem({
             </div>
           </div>
 
-          {/* 操作選單 */}
+          {/* 操作選單 - 手機版加大觸控區域 */}
           {isEditing && (
-            <div className="relative">
+            <div className="relative flex-shrink-0">
               <button
                 onClick={(e) => {
                   e.stopPropagation()
                   setShowMenu(!showMenu)
                 }}
-                className="p-1 rounded hover:bg-background-secondary transition-colors"
+                className="touch-target p-2 rounded hover:bg-background-secondary transition-colors"
               >
-                <MoreVertical className="w-4 h-4 text-foreground-muted" />
+                <MoreVertical className="w-4 h-4 sm:w-4 sm:h-4 text-foreground-muted" />
               </button>
 
               {showMenu && (
@@ -167,14 +168,17 @@ export default function PlaceItem({
                       setShowMenu(false)
                     }}
                   />
-                  <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-border py-1 z-20">
+                  {/* 手機版從底部彈出 */}
+                  <div className="absolute right-0 top-full mt-1 w-36 sm:w-32 bg-white rounded-xl sm:rounded-lg shadow-lg border border-border py-1 z-20
+                    lg:rounded-lg
+                    max-lg:fixed max-lg:left-4 max-lg:right-4 max-lg:top-auto max-lg:bottom-20 max-lg:w-auto max-lg:rounded-2xl">
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
                         setShowMenu(false)
                         onEdit?.()
                       }}
-                      className="w-full px-3 py-2 text-left text-sm text-foreground-secondary hover:bg-background-secondary flex items-center gap-2"
+                      className="touch-target w-full px-3 py-2.5 sm:py-2 text-left text-sm text-foreground-secondary hover:bg-background-secondary flex items-center gap-2"
                     >
                       <Edit2 className="w-4 h-4" />
                       編輯
@@ -185,7 +189,7 @@ export default function PlaceItem({
                         setShowMenu(false)
                         onDelete?.()
                       }}
-                      className="w-full px-3 py-2 text-left text-sm text-red-500 hover:bg-red-50 flex items-center gap-2"
+                      className="touch-target w-full px-3 py-2.5 sm:py-2 text-left text-sm text-red-500 hover:bg-red-50 flex items-center gap-2"
                     >
                       <Trash2 className="w-4 h-4" />
                       刪除
@@ -199,8 +203,8 @@ export default function PlaceItem({
 
         {/* 備註詳情 */}
         {showDetails && place.note && (
-          <div className="px-3 pb-3 pt-0">
-            <div className="bg-background-secondary/50 rounded-lg p-3 text-sm text-foreground-secondary">
+          <div className="px-3 sm:px-4 pb-3 pt-0">
+            <div className="bg-background-secondary/50 rounded-lg p-3 text-xs sm:text-sm text-foreground-secondary">
               {place.note}
             </div>
           </div>
@@ -208,14 +212,14 @@ export default function PlaceItem({
 
         {/* 照片 */}
         {place.photos && place.photos.length > 0 && showDetails && (
-          <div className="px-3 pb-3">
+          <div className="px-3 sm:px-4 pb-3">
             <div className="flex gap-2 overflow-x-auto">
               {place.photos.slice(0, 3).map((photo, i) => (
                 <img
                   key={i}
                   src={photo}
                   alt={`${place.name} ${i + 1}`}
-                  className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                  className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0"
                 />
               ))}
             </div>
@@ -247,10 +251,10 @@ export function EmptyPlaceItem({ onClick }: EmptyPlaceItemProps) {
   return (
     <button
       onClick={onClick}
-      className="w-full p-4 border-2 border-dashed border-border rounded-xl text-foreground-muted hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-200"
+      className="touch-target w-full p-4 sm:p-6 border-2 border-dashed border-border rounded-xl text-foreground-muted hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-200"
     >
       <MapPin className="w-6 h-6 mx-auto mb-2" />
-      <p>新增第一個景點</p>
+      <p className="text-sm sm:text-base">新增第一個景點</p>
     </button>
   )
 }

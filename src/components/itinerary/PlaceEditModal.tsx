@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
-import { X, Clock, MapPin, FileText } from 'lucide-react'
+import { formatDuration, getCategoryColor, getCategoryLabel } from '@/services/placeService'
 import type { Place, PlaceCategory } from '@/types/place'
-import { getCategoryLabel, getCategoryColor, formatDuration } from '@/services/placeService'
+import { Clock, FileText, MapPin, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface PlaceEditModalProps {
   place: Place
@@ -77,21 +77,21 @@ export default function PlaceEditModal({
   const durationOptions = [15, 30, 45, 60, 90, 120, 180, 240, 300, 360]
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden animate-japanese-fade-in">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-md overflow-hidden animate-japanese-fade-in safe-bottom">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <h3 className="text-lg font-medium text-foreground">編輯景點</h3>
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-border">
+          <h3 className="text-base sm:text-lg font-medium text-foreground">編輯景點</h3>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+            className="touch-target p-2 rounded-lg hover:bg-background-secondary transition-colors"
           >
             <X className="w-5 h-5 text-foreground-muted" />
           </button>
         </div>
 
         {/* Content */}
-        <form onSubmit={handleSubmit} className="p-4 space-y-5">
+        <form onSubmit={handleSubmit} className="p-4 space-y-4 sm:space-y-5">
           {/* 景點資訊 */}
           <div className="bg-background-secondary/50 rounded-xl p-4">
             <h4 className="font-medium text-foreground mb-1">{place.name}</h4>
@@ -238,25 +238,25 @@ export function DeleteConfirmModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl p-6 max-w-sm w-full animate-japanese-fade-in">
-        <h3 className="text-lg font-medium text-foreground mb-2">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl p-4 sm:p-6 max-w-sm w-full animate-japanese-fade-in safe-bottom">
+        <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">
           確定要刪除此景點？
         </h3>
-        <p className="text-foreground-secondary mb-6">
+        <p className="text-sm sm:text-base text-foreground-secondary mb-4 sm:mb-6">
           「{placeName}」將從行程中移除，此操作無法復原。
         </p>
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-border rounded-xl text-foreground-secondary hover:bg-background-secondary transition-colors"
+            className="touch-target flex-1 px-4 py-2 sm:py-2.5 border border-border rounded-xl text-sm sm:text-base text-foreground-secondary hover:bg-background-secondary transition-colors"
             disabled={isDeleting}
           >
             取消
           </button>
           <button
             onClick={handleConfirm}
-            className="flex-1 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50"
+            className="touch-target flex-1 px-4 py-2 sm:py-2.5 bg-red-500 text-white rounded-xl text-sm sm:text-base hover:bg-red-600 transition-colors disabled:opacity-50"
             disabled={isDeleting}
           >
             {isDeleting ? '刪除中...' : '確定刪除'}
