@@ -65,6 +65,8 @@ export default function TripDetailPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
+  const [menuPosition, setMenuPosition] = useState<{ top: number; right: number } | null>(null)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('split')
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [showComments, setShowComments] = useState(false)
@@ -75,6 +77,18 @@ export default function TripDetailPage() {
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null)
   const [editingPlace, setEditingPlace] = useState<Place | null>(null)
   const [deletingPlace, setDeletingPlace] = useState<{ dayId: string; place: Place } | null>(null)
+
+  // 處理選單開啟並計算位置
+  const handleMenuToggle = () => {
+    if (!showMenu && menuButtonRef.current) {
+      const rect = menuButtonRef.current.getBoundingClientRect()
+      setMenuPosition({
+        top: rect.bottom + 8, // 按鈕底部 + 8px 間距
+        right: window.innerWidth - rect.right, // 從右邊對齊
+      })
+    }
+    setShowMenu(!showMenu)
+  }
 
   const handleDelete = async () => {
     if (!id) return
@@ -199,12 +213,12 @@ export default function TripDetailPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
           {/* 檢視模式切換 - 桌面版顯示 */}
           <div className="hidden lg:flex items-center bg-background-secondary rounded-lg p-1">
             <button
               onClick={() => setViewMode('list')}
-              className={`touch-target p-2 rounded-md transition-colors ${
+              className={`flex items-center justify-center p-2 rounded-md transition-colors ${
                 viewMode === 'list' ? 'bg-white shadow-sm' : 'hover:bg-background-tertiary'
               }`}
               title="列表檢視"
@@ -213,7 +227,7 @@ export default function TripDetailPage() {
             </button>
             <button
               onClick={() => setViewMode('split')}
-              className={`touch-target p-2 rounded-md transition-colors ${
+              className={`flex items-center justify-center p-2 rounded-md transition-colors ${
                 viewMode === 'split' ? 'bg-white shadow-sm' : 'hover:bg-background-tertiary'
               }`}
               title="分割檢視"
@@ -222,7 +236,7 @@ export default function TripDetailPage() {
             </button>
             <button
               onClick={() => setViewMode('map')}
-              className={`touch-target p-2 rounded-md transition-colors ${
+              className={`flex items-center justify-center p-2 rounded-md transition-colors ${
                 viewMode === 'map' ? 'bg-white shadow-sm' : 'hover:bg-background-tertiary'
               }`}
               title="地圖檢視"
@@ -234,14 +248,14 @@ export default function TripDetailPage() {
           {/* 留言按鈕 */}
           <button
             onClick={() => setShowComments(!showComments)}
-            className={`touch-target p-2 rounded-lg transition-colors relative ${
+            className={`flex items-center justify-center p-2 rounded-lg transition-colors relative ${
               showComments ? 'bg-primary/10 text-primary' : 'hover:bg-background-secondary text-foreground-secondary'
             }`}
             title="討論"
           >
-            <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
+            <MessageSquare className="w-5 h-5" />
             {comments.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-accent text-white text-[10px] sm:text-xs rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent text-white text-xs rounded-full flex items-center justify-center">
                 {comments.length > 9 ? '9+' : comments.length}
               </span>
             )}
@@ -251,7 +265,7 @@ export default function TripDetailPage() {
           {canEdit && (
             <button
               onClick={() => setShowInviteModal(true)}
-              className="hidden sm:block touch-target p-2 rounded-lg hover:bg-background-secondary transition-colors"
+              className="hidden sm:flex items-center justify-center p-2 rounded-lg hover:bg-background-secondary transition-colors"
               title="邀請成員"
             >
               <UserPlus className="w-5 h-5 text-foreground-secondary" />
@@ -261,7 +275,7 @@ export default function TripDetailPage() {
           {/* 費用按鈕 - 手機版隱藏，改用底部導航 */}
           <Link
             to={`/trip/${id}/expense`}
-            className="hidden sm:block touch-target p-2 rounded-lg hover:bg-background-secondary transition-colors"
+            className="hidden sm:flex items-center justify-center p-2 rounded-lg hover:bg-background-secondary transition-colors"
             title="費用管理"
           >
             <DollarSign className="w-5 h-5 text-foreground-secondary" />
@@ -271,7 +285,7 @@ export default function TripDetailPage() {
           {canEdit && (
             <Link
               to={`/trip/${id}/edit`}
-              className="touch-target flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors"
             >
               <Edit className="w-4 h-4" />
               <span className="hidden sm:inline">編輯</span>
@@ -282,22 +296,33 @@ export default function TripDetailPage() {
 
           <div className="relative">
             <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+              ref={menuButtonRef}
+              onClick={handleMenuToggle}
+              className="flex items-center justify-center p-2 rounded-lg hover:bg-background-secondary transition-colors"
             >
               <MoreHorizontal className="w-5 h-5 text-foreground-secondary" />
             </button>
 
-            {showMenu && (
+            {showMenu && menuPosition && (
               <>
                 <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setShowMenu(false)}
+                  className="fixed inset-0 z-40"
+                  onClick={() => {
+                    setShowMenu(false)
+                    setMenuPosition(null)
+                  }}
                 />
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-border py-2 z-20">
+                <div 
+                  className="fixed w-48 bg-white rounded-xl shadow-lg border border-border py-2 z-50"
+                  style={{
+                    top: `${menuPosition.top}px`,
+                    right: `${menuPosition.right}px`,
+                  }}
+                >
                   <button
                     onClick={() => {
                       setShowMenu(false)
+                      setMenuPosition(null)
                       setShowExportModal(true)
                     }}
                     className="w-full px-4 py-2 text-left text-foreground-secondary hover:bg-background-secondary flex items-center gap-2"
@@ -309,6 +334,7 @@ export default function TripDetailPage() {
                     <button
                       onClick={() => {
                         setShowMenu(false)
+                        setMenuPosition(null)
                         setShowDeleteConfirm(true)
                       }}
                       className="w-full px-4 py-2 text-left text-red-500 hover:bg-red-50 flex items-center gap-2"

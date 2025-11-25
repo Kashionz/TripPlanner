@@ -180,7 +180,7 @@ export default function ExportModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-      <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-lg overflow-hidden animate-japanese-fade-in safe-bottom">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-lg max-h-[90vh] sm:max-h-[85vh] flex flex-col overflow-hidden animate-japanese-fade-in safe-bottom">
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-border">
           <h2 className="text-base sm:text-lg font-medium text-foreground">匯出行程</h2>
@@ -193,7 +193,7 @@ export default function ExportModal({
         </div>
 
         {/* Content */}
-        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto flex-1">
           {/* 匯出中狀態 */}
           {progress.status !== 'idle' && progress.status !== 'error' && progress.status !== 'complete' && (
             <div className="text-center py-8">
@@ -331,7 +331,7 @@ export default function ExportModal({
 
         {/* Footer */}
         {progress.status === 'idle' && (
-          <div className="flex items-center justify-end gap-3 px-4 sm:px-6 py-3 sm:py-4 border-t border-border bg-background-secondary">
+          <div className="flex items-center justify-end gap-3 px-4 sm:px-6 py-3 sm:py-4 border-t border-border bg-background-secondary flex-shrink-0">
             <button
               onClick={resetAndClose}
               className="touch-target px-3 sm:px-4 py-2 text-sm sm:text-base text-foreground-secondary hover:text-foreground transition-colors"

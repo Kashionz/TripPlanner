@@ -52,3 +52,4 @@ coverage
 
 # Development Documents
 docs/*
+.agent/*

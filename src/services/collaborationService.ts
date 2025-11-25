@@ -17,6 +17,7 @@ import {
 } from 'firebase/firestore'
 import { db } from './firebase'
 import { addTripMember } from './tripService'
+import { sendIntegratedNotification, sendMentionNotification } from './notificationFilterService'
 import type { MemberRole } from '@/types/trip'
 import type {
   Invite,
@@ -178,18 +179,26 @@ export async function acceptInvite(
   const userSnap = await getDoc(userRef)
   const userName = userSnap.exists() ? userSnap.data().displayName : '使用者'
   
-  await createNotification({
-    userId: invite.inviterId,
-    type: 'invite_accepted',
-    title: '邀請已接受',
-    message: `${userName} 已接受您的邀請，加入「${invite.tripTitle}」`,
-    data: {
-      tripId: invite.tripId,
-      tripTitle: invite.tripTitle,
-      senderId: userId,
-      senderName: userName,
+  await sendIntegratedNotification(
+    {
+      userId: invite.inviterId,
+      type: 'invite_accepted',
+      title: '邀請已接受',
+      message: `${userName} 已接受您的邀請，加入「${invite.tripTitle}」`,
+      data: {
+        tripId: invite.tripId,
+        tripTitle: invite.tripTitle,
+        senderId: userId,
+        senderName: userName,
+      },
     },
-  })
+    {
+      title: '邀請已接受',
+      body: `${userName} 已接受您的邀請，加入「${invite.tripTitle}」`,
+      tag: 'invite-accepted',
+      url: `/trip/${invite.tripId}`,
+    }
+  )
 
   return { success: true, message: '成功加入行程', tripId: invite.tripId }
 }
@@ -405,19 +414,12 @@ export async function createComment(data: CreateCommentData): Promise<string> {
     const tripTitle = tripSnap.exists() ? tripSnap.data().title : '行程'
 
     for (const mentionedUserId of data.mentions) {
-      await createNotification({
-        userId: mentionedUserId,
-        type: 'comment_mentioned',
-        title: '有人提及您',
-        message: `${userName} 在「${tripTitle}」中提及了您`,
-        data: {
-          tripId: data.tripId,
-          tripTitle,
-          commentId: docRef.id,
-          senderId: data.userId,
-          senderName: userName,
-        },
-      })
+      await sendMentionNotification(
+        mentionedUserId,
+        data.tripId,
+        tripTitle,
+        userName
+      )
     }
   }
 
@@ -649,18 +651,31 @@ export async function updateMemberRoleWithActivity(
   })
 
   // 發送通知給被變更者
-  await createNotification({
-    userId,
-    type: 'role_changed',
-    title: '角色已變更',
-    message: `您在行程中的角色已變更為「${getRoleName(newRole)}」`,
-    data: {
-      tripId,
-      newRole,
-      senderId: currentUser.id,
-      senderName: currentUser.displayName,
+  const tripRef = doc(db, 'trips', tripId)
+  const tripSnap = await getDoc(tripRef)
+  const tripTitle = tripSnap.exists() ? tripSnap.data().title : '行程'
+
+  await sendIntegratedNotification(
+    {
+      userId,
+      type: 'role_changed',
+      title: '角色已變更',
+      message: `您在行程中的角色已變更為「${getRoleName(newRole)}」`,
+      data: {
+        tripId,
+        tripTitle,
+        newRole,
+        senderId: currentUser.id,
+        senderName: currentUser.displayName,
+      },
     },
-  })
+    {
+      title: '角色已變更',
+      body: `您在「${tripTitle}」中的角色已變更為「${getRoleName(newRole)}」`,
+      tag: 'role-changed',
+      url: `/trip/${tripId}`,
+    }
+  )
 }
 
 /**
@@ -711,18 +726,27 @@ export async function removeMemberWithActivity(
   const tripSnap = await getDoc(tripRef)
   const tripTitle = tripSnap.exists() ? tripSnap.data().title : '行程'
 
-  await createNotification({
-    userId,
-    type: 'member_left',
-    title: '已被移出行程',
-    message: `您已被移出「${tripTitle}」`,
-    data: {
-      tripId,
-      tripTitle,
-      senderId: currentUser.id,
-      senderName: currentUser.displayName,
+  await sendIntegratedNotification(
+    {
+      userId,
+      type: 'member_left',
+      title: '已被移出行程',
+      message: `您已被移出「${tripTitle}」`,
+      data: {
+        tripId,
+        tripTitle,
+        senderId: currentUser.id,
+        senderName: currentUser.displayName,
+      },
     },
-  })
+    {
+      title: '已被移出行程',
+      body: `您已被移出「${tripTitle}」`,
+      tag: 'member-removed',
+      requireInteraction: true,
+      url: '/dashboard',
+    }
+  )
 }
 
 /**
