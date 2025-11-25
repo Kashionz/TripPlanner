@@ -90,7 +90,7 @@ export default function Header() {
               {/* Dropdown */}
               <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl border border-border shadow-japanese-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="p-2">
-                  <div className="px-3 py-2 text-sm text-foreground-muted">
+                  <div className="px-3 py-2 text-sm text-foreground-muted truncate" title={user.email}>
                     {user.email}
                   </div>
                   <hr className="my-1 border-border" />
