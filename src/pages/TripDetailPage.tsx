@@ -3,11 +3,9 @@ import { useParams, Link } from 'react-router-dom'
 import {
   ArrowLeft,
   Edit,
-  Share2,
   MoreHorizontal,
   Calendar,
   MapPin,
-  Users,
   Trash2,
   Loader2,
   Map as MapIcon,
@@ -16,7 +14,7 @@ import {
   UserPlus,
 } from 'lucide-react'
 import { useTrip, useTripActions, useDateFormatter, useTripStats } from '@/hooks/useTrip'
-import { useTripPlaces, usePlaceActions, useSelectedPlace, useRoutes } from '@/hooks/usePlace'
+import { useTripPlaces, usePlaceActions, useSelectedPlace } from '@/hooks/usePlace'
 import { useTripComments } from '@/hooks/useCollaboration'
 import { useAuthStore } from '@/stores/authStore'
 import DayCard from '@/components/itinerary/DayCard'
@@ -27,7 +25,7 @@ import TripMap from '@/components/map/TripMap'
 import InviteModal from '@/components/collaboration/InviteModal'
 import MemberList from '@/components/collaboration/MemberList'
 import Comments from '@/components/collaboration/Comments'
-import type { Day, TripMember, MemberRole } from '@/types/trip'
+import type { Day, MemberRole } from '@/types/trip'
 import type { Place, PlaceCategory } from '@/types/place'
 
 type ViewMode = 'list' | 'map' | 'split'
@@ -42,10 +40,9 @@ export default function TripDetailPage() {
 
   // 景點相關狀態
   const dayIds = useMemo(() => trip?.days?.map(d => d.id) || [], [trip?.days])
-  const { placesMap, allPlaces, getPlacesByDay } = useTripPlaces(id, dayIds)
+  const { allPlaces, getPlacesByDay } = useTripPlaces(id, dayIds)
   const { addPlace, editPlace, removePlace, reorder } = usePlaceActions()
-  const { selectedPlaceId, selectPlace, clearSelection } = useSelectedPlace()
-  const { routes } = useRoutes(allPlaces)
+  const { selectedPlaceId, selectPlace } = useSelectedPlace()
 
   // 留言
   const { comments } = useTripComments(id)

@@ -4,7 +4,6 @@ import {
   // 邀請
   createInvite,
   getInviteByToken,
-  getTripInvites,
   acceptInvite,
   revokeInvite,
   deleteInvite,
@@ -12,20 +11,16 @@ import {
   getInviteLink,
   copyInviteLink,
   // 通知
-  getUserNotifications,
-  getUnreadNotificationCount,
   markNotificationAsRead,
   markAllNotificationsAsRead,
   deleteNotification,
   subscribeToUserNotifications,
   // 留言
   createComment,
-  getTripComments,
   updateComment,
   deleteComment,
   subscribeToTripComments,
   // 活動
-  getTripActivities,
   subscribeToTripActivities,
   // 成員管理
   updateMemberRoleWithActivity,
@@ -370,7 +365,6 @@ export function useTripComments(tripId: string | undefined) {
 export function useTripActivities(tripId: string | undefined) {
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
   // 訂閱活動記錄
   useEffect(() => {
@@ -392,7 +386,6 @@ export function useTripActivities(tripId: string | undefined) {
   return {
     activities,
     loading,
-    error,
   }
 }
 

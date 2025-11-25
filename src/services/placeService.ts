@@ -12,7 +12,7 @@ import {
   onSnapshot,
 } from 'firebase/firestore'
 import { db } from './firebase'
-import type { Place, PlaceCategory, GooglePlace, RouteInfo } from '@/types/place'
+import type { Place, PlaceCategory, RouteInfo } from '@/types/place'
 
 // ==================== Place CRUD ====================
 

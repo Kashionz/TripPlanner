@@ -9,7 +9,6 @@ import {
   UserMinus,
   LogOut,
   Loader2,
-  AlertCircle,
 } from 'lucide-react'
 import { useMemberActions } from '@/hooks/useCollaboration'
 import { useAuthStore } from '@/stores/authStore'
@@ -104,7 +103,7 @@ function MemberItem({
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false)
   
-  const { loading, error, updateRole, removeMember, leave } = useMemberActions(tripId)
+  const { loading, updateRole, removeMember, leave } = useMemberActions(tripId)
 
   const RoleIcon = roleIcons[member.role]
 

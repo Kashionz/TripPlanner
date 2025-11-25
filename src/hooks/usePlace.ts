@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { Place, PlaceCategory, RouteInfo } from '@/types/place'
 import {
-  getDayPlaces,
   createPlace,
   updatePlace,
   deletePlace,
@@ -9,7 +8,6 @@ import {
   subscribeToDayPlaces,
   createPlaceFromGoogle,
   calculateRoutes,
-  type CreatePlaceData,
   type UpdatePlaceData,
 } from '@/services/placeService'
 
@@ -17,7 +15,6 @@ import {
 export function useDayPlaces(tripId: string | undefined, dayId: string | undefined) {
   const [places, setPlaces] = useState<Place[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!tripId || !dayId) {
@@ -37,13 +34,12 @@ export function useDayPlaces(tripId: string | undefined, dayId: string | undefin
     return () => unsubscribe()
   }, [tripId, dayId])
 
-  return { places, loading, error }
+  return { places, loading }
 }
 
 // 景點操作 Hook
 export function usePlaceActions() {
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const addPlace = useCallback(async (
     tripId: string,
@@ -52,7 +48,6 @@ export function usePlaceActions() {
     category: PlaceCategory
   ): Promise<string | null> => {
     setLoading(true)
-    setError(null)
 
     try {
       const placeData = createPlaceFromGoogle(googlePlace, category)
@@ -63,7 +58,6 @@ export function usePlaceActions() {
       return placeId
     } catch (err) {
       console.error('新增景點失敗:', err)
-      setError('新增景點失敗')
       return null
     } finally {
       setLoading(false)
@@ -77,14 +71,12 @@ export function usePlaceActions() {
     data: UpdatePlaceData
   ): Promise<boolean> => {
     setLoading(true)
-    setError(null)
 
     try {
       await updatePlace(tripId, dayId, placeId, data)
       return true
     } catch (err) {
       console.error('更新景點失敗:', err)
-      setError('更新景點失敗')
       return false
     } finally {
       setLoading(false)
@@ -97,14 +89,12 @@ export function usePlaceActions() {
     placeId: string
   ): Promise<boolean> => {
     setLoading(true)
-    setError(null)
 
     try {
       await deletePlace(tripId, dayId, placeId)
       return true
     } catch (err) {
       console.error('刪除景點失敗:', err)
-      setError('刪除景點失敗')
       return false
     } finally {
       setLoading(false)
@@ -127,7 +117,6 @@ export function usePlaceActions() {
 
   return {
     loading,
-    error,
     addPlace,
     editPlace,
     removePlace,

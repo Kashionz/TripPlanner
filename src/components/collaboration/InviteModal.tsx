@@ -50,7 +50,7 @@ export default function InviteModal({
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const { invites, pendingInvites, create, revoke, remove, getLink, copyLink } =
+  const { pendingInvites, create, revoke, remove, getLink, copyLink } =
     useTripInvites(tripId)
 
   const handleCreateInvite = async () => {

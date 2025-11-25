@@ -17,7 +17,7 @@ import {
 } from 'firebase/firestore'
 import { db } from './firebase'
 import { addTripMember } from './tripService'
-import type { MemberRole, TripMember } from '@/types/trip'
+import type { MemberRole } from '@/types/trip'
 import type {
   Invite,
   CreateInviteData,
