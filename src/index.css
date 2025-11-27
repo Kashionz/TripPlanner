@@ -191,6 +191,16 @@
     padding-top: env(safe-area-inset-top);
   }
   
+  /* 隱藏滾動條 */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
+
   /* 觸控友善尺寸 */
   .touch-target {
     @apply min-h-[44px] min-w-[44px];

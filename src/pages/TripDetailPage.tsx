@@ -5,7 +5,7 @@ import { ExportModal } from '@/components/export'
 import DayCard from '@/components/itinerary/DayCard'
 import DraggableList from '@/components/itinerary/DraggableList'
 import PlaceEditModal, { DeleteConfirmModal } from '@/components/itinerary/PlaceEditModal'
-import { PlaceSearchModal } from '@/components/itinerary/PlaceSearch'
+import AddPlaceModal from '@/components/itinerary/AddPlaceModal'
 import MapBottomSheet from '@/components/map/MapBottomSheet'
 import TripMap from '@/components/map/TripMap'
 import { useTripComments } from '@/hooks/useCollaboration'
@@ -557,13 +557,21 @@ export default function TripDetailPage() {
       )}
 
       {/* Place Search Modal */}
-      <PlaceSearchModal
+      <AddPlaceModal
         isOpen={showPlaceSearch}
         onClose={() => {
           setShowPlaceSearch(false)
           setSelectedDayId(null)
         }}
         onPlaceAdd={handlePlaceAdd}
+        previousPlace={selectedDayId ? (() => {
+          const dayPlaces = getPlacesByDay(selectedDayId)
+          const lastPlace = dayPlaces[dayPlaces.length - 1]
+          return lastPlace ? {
+            endTime: lastPlace.endTime,
+            category: lastPlace.category
+          } : undefined
+        })() : undefined}
       />
 
       {/* Place Edit Modal */}

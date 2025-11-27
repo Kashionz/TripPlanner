@@ -1,0 +1,335 @@
+import { useIsMobile } from '@/hooks/useMediaQuery'
+import { useAddPlaceModal } from '@/hooks/useAddPlaceModal'
+import { createPlaceFromGoogle } from '@/services/placeService'
+import { ArrowLeft, X, Loader2 } from 'lucide-react'
+import { useEffect } from 'react'
+import SearchSection from './SearchSection'
+import LocationPicker from './LocationPicker'
+import DetailForm from './DetailForm'
+import type { AddPlaceModalProps } from './types'
+
+export default function AddPlaceModal({
+  isOpen,
+  onClose,
+  onPlaceAdd,
+  previousPlace
+}: AddPlaceModalProps) {
+  const isMobile = useIsMobile()
+  
+  const {
+    mode,
+    step,
+    formData,
+    selectedPlace,
+    errors,
+    reset,
+    fillFromGooglePlace,
+    fillFromQuickAccess,
+    switchToManual,
+    switchToSearch,
+    updateField,
+    updateLocation,
+    validate,
+    getFormData,
+    saveHistory,
+    setStep
+  } = useAddPlaceModal({ previousPlace })
+
+  // 重置表單當彈窗開啟時
+  useEffect(() => {
+    if (isOpen) {
+      reset()
+    }
+  }, [isOpen, reset])
+
+  // 處理表單提交
+  const handleSubmit = async () => {
+    const data = getFormData()
+    if (!data) return
+
+    try {
+      // 如果有 Google Place ID，使用 Google Place
+      if (selectedPlace) {
+        await onPlaceAdd(selectedPlace, data.category)
+      } else {
+        // 手動輸入的景點，需要建立 PlaceResult 格式
+        const googlePlace: google.maps.places.PlaceResult = {
+          place_id: data.placeId || `manual-${Date.now()}`,
+          name: data.name,
+          formatted_address: data.address,
+          geometry: {
+            location: new google.maps.LatLng(data.lat, data.lng)
+          },
+          photos: data.photos?.map(photo => ({
+            getUrl: () => photo,
+            photo_reference: '',
+            width: 400,
+            height: 300,
+            html_attributions: []
+          })),
+          rating: data.rating,
+          user_ratings_total: data.ratingTotal,
+          types: [data.category]
+        }
+        
+        await onPlaceAdd(googlePlace, data.category)
+      }
+
+      // 儲存到搜尋歷史
+      saveHistory()
+      
+      // 關閉彈窗
+      onClose()
+    } catch (error) {
+      console.error('新增景點失敗:', error)
+      alert('新增景點失敗，請重試')
+    }
+  }
+
+  // 處理快速景點選擇
+  const handleQuickPlaceSelect = (place: any) => {
+    fillFromQuickAccess(place)
+  }
+
+  // 處理 Google Place 選擇
+  const handleGooglePlaceSelect = (place: google.maps.places.PlaceResult) => {
+    fillFromGooglePlace(place)
+  }
+
+  // 處理返回按鈕
+  const handleBack = () => {
+    if (step === 'details') {
+      setStep('place-info')
+    } else if (mode === 'manual') {
+      switchToSearch()
+    }
+  }
+
+  if (!isOpen) return null
+
+  // 手機版分步驟顯示
+  if (isMobile) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+        <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-md overflow-hidden animate-japanese-fade-in safe-bottom max-h-[90vh] flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-border flex-shrink-0">
+            <div className="flex items-center gap-3">
+              {(step === 'details' || mode === 'manual') && (
+                <button
+                  onClick={handleBack}
+                  className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5 text-foreground-secondary" />
+                </button>
+              )}
+              <h3 className="text-lg font-medium text-foreground">
+                {step === 'place-info' ? '選擇景點' : '設定詳情'}
+              </h3>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+            >
+              <X className="w-5 h-5 text-foreground-secondary" />
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto p-4">
+            {step === 'place-info' && mode === 'search' && (
+              <SearchSection
+                onPlaceSelect={handleGooglePlaceSelect}
+                onQuickPlaceSelect={handleQuickPlaceSelect}
+                onSwitchToManual={switchToManual}
+              />
+            )}
+
+            {step === 'place-info' && mode === 'manual' && (
+              <div className="space-y-4">
+                <div className="text-center mb-4">
+                  <h4 className="text-base font-medium text-foreground mb-2">
+                    手動輸入景點
+                  </h4>
+                  <p className="text-sm text-foreground-secondary">
+                    輸入景點名稱和位置資訊
+                  </p>
+                </div>
+                
+                <LocationPicker
+                  initialLocation={formData.lat && formData.lng ? {
+                    lat: formData.lat,
+                    lng: formData.lng
+                  } : undefined}
+                  onLocationSelect={updateLocation}
+                />
+                
+                <button
+                  onClick={() => setStep('details')}
+                  disabled={!formData.lat || !formData.lng}
+                  className="w-full px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  下一步：設定詳情
+                </button>
+              </div>
+            )}
+
+            {step === 'details' && (
+              <DetailForm
+                name={formData.name || ''}
+                address={formData.address || ''}
+                lat={formData.lat || 0}
+                lng={formData.lng || 0}
+                category={formData.category || 'attraction'}
+                startTime={formData.startTime || null}
+                duration={formData.duration || 60}
+                note={formData.note || ''}
+                photos={formData.photos}
+                rating={formData.rating}
+                ratingTotal={formData.ratingTotal}
+                errors={errors}
+                onFieldChange={(field, value) => updateField(field as any, value as any)}
+              />
+            )}
+          </div>
+
+          {/* Footer */}
+          {step === 'details' && (
+            <div className="p-4 border-t border-border flex-shrink-0">
+              <div className="flex gap-3">
+                <button
+                  onClick={onClose}
+                  className="flex-1 px-4 py-3 border border-border rounded-xl text-foreground-secondary hover:bg-background-secondary transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  className="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors"
+                >
+                  新增景點
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // 桌面版完整顯示
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-japanese-fade-in">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-border">
+          <div className="flex items-center gap-3">
+            {mode === 'manual' && (
+              <button
+                onClick={switchToSearch}
+                className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5 text-foreground-secondary" />
+              </button>
+            )}
+            <h3 className="text-xl font-medium text-foreground">
+              新增景點
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+          >
+            <X className="w-5 h-5 text-foreground-secondary" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 max-h-[calc(90vh-120px)] overflow-y-auto">
+          {mode === 'search' && step === 'place-info' && (
+            <SearchSection
+              onPlaceSelect={handleGooglePlaceSelect}
+              onQuickPlaceSelect={handleQuickPlaceSelect}
+              onSwitchToManual={switchToManual}
+            />
+          )}
+
+          {mode === 'manual' && step === 'place-info' && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h4 className="text-lg font-medium text-foreground mb-2">
+                  手動輸入景點
+                </h4>
+                <p className="text-foreground-secondary">
+                  輸入景點名稱和位置資訊
+                </p>
+              </div>
+              
+              <LocationPicker
+                initialLocation={formData.lat && formData.lng ? {
+                  lat: formData.lat,
+                  lng: formData.lng
+                } : undefined}
+                onLocationSelect={updateLocation}
+              />
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={switchToSearch}
+                  className="flex-1 px-4 py-3 border border-border rounded-xl text-foreground-secondary hover:bg-background-secondary transition-colors"
+                >
+                  返回搜尋
+                </button>
+                <button
+                  onClick={() => setStep('details')}
+                  disabled={!formData.lat || !formData.lng}
+                  className="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  下一步：設定詳情
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 'details' && (
+            <DetailForm
+              name={formData.name || ''}
+              address={formData.address || ''}
+              lat={formData.lat || 0}
+              lng={formData.lng || 0}
+              category={formData.category || 'attraction'}
+              startTime={formData.startTime || null}
+              duration={formData.duration || 60}
+              note={formData.note || ''}
+              photos={formData.photos}
+              rating={formData.rating}
+              ratingTotal={formData.ratingTotal}
+              errors={errors}
+              onFieldChange={(field, value) => updateField(field as any, value as any)}
+            />
+          )}
+        </div>
+
+        {/* Footer */}
+        {step === 'details' && (
+          <div className="p-6 border-t border-border">
+            <div className="flex gap-3">
+              <button
+                onClick={onClose}
+                className="flex-1 px-4 py-3 border border-border rounded-xl text-foreground-secondary hover:bg-background-secondary transition-colors"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors"
+              >
+                新增景點
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
