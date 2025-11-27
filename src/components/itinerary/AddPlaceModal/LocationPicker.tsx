@@ -1,6 +1,6 @@
-import { useJsApiLoader, GoogleMap, Marker } from '@react-google-maps/api'
-import { MapPin, Navigation, Loader2 } from 'lucide-react'
-import { useCallback, useState, useRef, useEffect } from 'react'
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api'
+import { Loader2, MapPin, Navigation } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { LocationPickResult } from './types'
 
 interface LocationPickerProps {

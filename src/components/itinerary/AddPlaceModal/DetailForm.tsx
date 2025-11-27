@@ -1,8 +1,8 @@
 import { formatDuration, getCategoryColor, getCategoryLabel } from '@/services/placeService'
 import type { PlaceCategory } from '@/types/place'
-import type { FormErrors } from './types'
-import { Clock, FileText, MapPin, Star, X } from 'lucide-react'
+import { Clock, FileText, Star, X } from 'lucide-react'
 import { useState } from 'react'
+import type { FormErrors } from './types'
 
 interface DetailFormProps {
   name: string

@@ -1,11 +1,9 @@
-import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useAddPlaceModal } from '@/hooks/useAddPlaceModal'
-import { createPlaceFromGoogle } from '@/services/placeService'
-import { ArrowLeft, X, Loader2 } from 'lucide-react'
+import { useIsMobile } from '@/hooks/useMediaQuery'
+import { ArrowLeft, X } from 'lucide-react'
 import { useEffect } from 'react'
-import SearchSection from './SearchSection'
-import LocationPicker from './LocationPicker'
 import DetailForm from './DetailForm'
+import SearchSection from './SearchSection'
 import type { AddPlaceModalProps } from './types'
 
 export default function AddPlaceModal({
@@ -28,8 +26,6 @@ export default function AddPlaceModal({
     switchToManual,
     switchToSearch,
     updateField,
-    updateLocation,
-    validate,
     getFormData,
     saveHistory,
     setStep
